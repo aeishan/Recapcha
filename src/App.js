@@ -17,6 +17,31 @@ function App() {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1500))
 
+    // try{
+    //   const response = await fetch('http://localhost:5050/api/auth/login', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify({ email, password }),
+    //   })
+
+    //   if (!response.ok) {
+    //     const errorData = await response.json()
+    //     throw new Error(errorData.message || 'Login failed')
+    //   }
+
+    //   const data = await response.json()
+    //   console.log("Login successful:", data)
+    //   setIsLoggedIn(true)
+    //   setIsLoading(false)
+    // } catch (error) {
+    //   console.error("Login error:", error)
+    //   alert("Login failed: " + error.message)
+    //   setIsLoading(false)
+    // }
+
+
     console.log("Login attempt:", { email, password, rememberMe })
     
     // After successful login, show dashboard
