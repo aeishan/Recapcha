@@ -2,11 +2,14 @@ import React, { useState } from "react"
 import './App.css'
 import Dashboard from './Dashboard'
 import Signup from './Signup'
+import QuizPage from './QuizPage'
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
   const [showSignup, setShowSignup] = useState(false)
+  const [showQuiz, setShowQuiz] = useState(false)
+  const [quizCourse, setQuizCourse] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -56,6 +59,8 @@ function App() {
     setIsLoggedIn(false)
     setCurrentUser(null)
     setShowSignup(false)
+    setShowQuiz(false)
+    setQuizCourse("")
     setEmail("")
     setPassword("")
     setRememberMe(false)
@@ -73,9 +78,24 @@ function App() {
     setEmailError("") // Clear any signup errors
   }
 
+  const handleShowQuiz = (course) => {
+    setQuizCourse(course)
+    setShowQuiz(true)
+  }
+
+  const handleBackToDashboard = () => {
+    setShowQuiz(false)
+    setQuizCourse("")
+  }
+
+  // If showing quiz, show quiz page
+  if (showQuiz && quizCourse) {
+    return <QuizPage course={quizCourse} onBackToDashboard={handleBackToDashboard} />
+  }
+
   // If logged in, show dashboard
   if (isLoggedIn && currentUser) {
-    return <Dashboard user={currentUser} onLogout={handleLogout} />
+    return <Dashboard user={currentUser} onLogout={handleLogout} onShowQuiz={handleShowQuiz} />
   }
 
   // If showing signup, show signup page
@@ -215,7 +235,7 @@ function App() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
