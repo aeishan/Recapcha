@@ -1,8 +1,10 @@
 # Getting Started with Create React App
-
+ we gonna win
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
 obeyad was here
 ## Available Scripts. 
+
 
 In the project directory, you can run:
 
