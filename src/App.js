@@ -1,7 +1,9 @@
 import React, { useState } from "react"
 import './App.css'
+import Dashboard from './Dashboard'
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -16,9 +18,26 @@ function App() {
     await new Promise((resolve) => setTimeout(resolve, 1500))
 
     console.log("Login attempt:", { email, password, rememberMe })
+    
+    // After successful login, show dashboard
+    setIsLoggedIn(true)
     setIsLoading(false)
   }
 
+  const handleLogout = () => {
+    setIsLoggedIn(false)
+    setEmail("")
+    setPassword("")
+    setRememberMe(false)
+    console.log("User logged out")
+  }
+
+  // If logged in, show dashboard
+  if (isLoggedIn) {
+    return <Dashboard onLogout={handleLogout} />
+  }
+
+  // Otherwise, show login form
   return (
     <div className="login-container">
       <div className="login-wrapper">
