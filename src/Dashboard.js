@@ -1,18 +1,79 @@
 import React, { useState } from "react"
 import './App.css'
+import CourseModel from './CourseModel'
+import QuizModel from './QuizModel'
 
-function Dashboard({ onLogout }) {
+function Dashboard({ user, onLogout, onShowQuiz }) {
   const [isRecording, setIsRecording] = useState(false)
-  const [user] = useState({ name: "John Doe", email: "john@example.com" })
+  const [showCourseModel, setShowCourseModel] = useState(false)
+  const [showQuizModel, setShowQuizModel] = useState(false)
+  const [selectedCourse, setSelectedCourse] = useState("")
+  const [recordingTimer, setRecordingTimer] = useState(0)
 
   const handleStartRecording = () => {
-    setIsRecording(!isRecording)
-    console.log(isRecording ? "Stopping recording..." : "Starting recording...")
+    if (!isRecording) {
+      setShowCourseModel(true)
+    } else {
+      // Stop recording
+      setIsRecording(false)
+      setRecordingTimer(0)
+      setShowQuizModel(true)
+    }
+  }
+
+  const handleCourseSelect = (courseId) => {
+    setSelectedCourse(courseId)
+    setIsRecording(true)
+    setShowCourseModel(false)
+    
+    // Start timer simulation
+    const timer = setInterval(() => {
+      setRecordingTimer(prev => prev + 1)
+    }, 1000)
+    
+    // Auto stop after 10 seconds for demo (remove this in real app)
+    setTimeout(() => {
+      clearInterval(timer)
+      if (isRecording) {
+        setIsRecording(false)
+        setRecordingTimer(0)
+        setShowQuizModel(true)
+      }
+    }, 10000)
+  }
+
+  const handleTakeQuiz = () => {
+    setShowQuizModel(false)
+    onShowQuiz(selectedCourse)
+  }
+
+  const handleBackToDashboard = () => {
+    setShowQuizModel(false)
+    setSelectedCourse("")
   }
 
   const handleLogout = () => {
     console.log("Logging out...")
     onLogout() // Call the logout function passed from App.js
+  }
+
+  const getCourseName = (courseId) => {
+    const courseNames = {
+      'calculus': 'Calculus',
+      'linear-algebra': 'Linear Algebra',
+      'biology': 'Biology',
+      'physics': 'Physics',
+      'chemistry': 'Chemistry',
+      'history': 'History',
+      'music': 'Music'
+    }
+    return courseNames[courseId] || courseId
+  }
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
   const stats = [
@@ -28,7 +89,7 @@ function Dashboard({ onLogout }) {
       description: "Begin recording and transcribing audio",
       icon: "🎤",
       color: "green",
-      action: () => console.log("Navigate to Live Transcription"),
+      action: () => setShowCourseModel(true),
     },
     {
       title: "View Flashcards",
@@ -53,6 +114,10 @@ function Dashboard({ onLogout }) {
     },
   ]
 
+  // Get full name from user data
+  const fullName = `${user.firstName} ${user.lastName}`
+  const firstName = user.firstName
+
   return (
     <div className="dashboard-container">
       {/* Header */}
@@ -74,13 +139,20 @@ function Dashboard({ onLogout }) {
               <span className="record-icon">
                 {isRecording ? "⏸️" : "▶️"}
               </span>
-              {isRecording ? "Stop Recording" : "Quick Record"}
+              {isRecording ? (
+                <span>
+                  Stop Recording ({formatTime(recordingTimer)})
+                  {selectedCourse && ` - ${getCourseName(selectedCourse)}`}
+                </span>
+              ) : (
+                "Quick Record"
+              )}
             </button>
 
             {/* User Menu */}
             <div className="user-section">
               <div className="user-info">
-                <p className="user-name">{user.name}</p>
+                <p className="user-name">{fullName}</p>
                 <p className="user-email">{user.email}</p>
               </div>
               <div className="user-avatar">
@@ -97,7 +169,7 @@ function Dashboard({ onLogout }) {
       <div className="dashboard-content">
         {/* Welcome Section */}
         <div className="welcome-section">
-          <h2 className="welcome-title">Welcome back, {user.name.split(" ")[0]}! 👋</h2>
+          <h2 className="welcome-title">Welcome back, {firstName}! 👋</h2>
           <p className="welcome-subtitle">Ready to continue your learning journey? Here's what's happening today.</p>
         </div>
 
@@ -206,6 +278,20 @@ function Dashboard({ onLogout }) {
           </div>
         </div>
       </div>
+
+      {/* Models */}
+      <CourseModel
+        isOpen={showCourseModel}
+        onClose={() => setShowCourseModel(false)}
+        onSelectCourse={handleCourseSelect}
+      />
+
+      <QuizModel
+        isOpen={showQuizModel}
+        onClose={handleBackToDashboard}
+        onTakeQuiz={handleTakeQuiz}
+        courseName={getCourseName(selectedCourse)}
+      />
     </div>
   )
 }

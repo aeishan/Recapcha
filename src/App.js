@@ -1,17 +1,38 @@
 import React, { useState } from "react"
 import './App.css'
 import Dashboard from './Dashboard'
+import Signup from './Signup'
+import QuizPage from './QuizPage'
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [currentUser, setCurrentUser] = useState(null)
+  const [showSignup, setShowSignup] = useState(false)
+  const [showQuiz, setShowQuiz] = useState(false)
+  const [quizCourse, setQuizCourse] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [emailError, setEmailError] = useState("")
+
+  // Email validation function
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setEmailError("") // Clear previous errors
+    
+    // Check if email is valid format
+    if (!isValidEmail(email)) {
+      setEmailError('Please enter a valid email address')
+      return
+    }
+    
     setIsLoading(true)
 
     // Simulate API call
@@ -44,22 +65,55 @@ function App() {
 
     console.log("Login attempt:", { email, password, rememberMe })
     
-    // After successful login, show dashboard
-    setIsLoggedIn(true)
     setIsLoading(false)
   }
 
   const handleLogout = () => {
     setIsLoggedIn(false)
+    setCurrentUser(null)
+    setShowSignup(false)
+    setShowQuiz(false)
+    setQuizCourse("")
     setEmail("")
     setPassword("")
     setRememberMe(false)
+    setEmailError("") // Clear email error on logout
     console.log("User logged out")
   }
 
+  const handleShowSignup = () => {
+    setShowSignup(true)
+    setEmailError("") // Clear any login errors
+  }
+
+  const handleBackToLogin = () => {
+    setShowSignup(false)
+    setEmailError("") // Clear any signup errors
+  }
+
+  const handleShowQuiz = (course) => {
+    setQuizCourse(course)
+    setShowQuiz(true)
+  }
+
+  const handleBackToDashboard = () => {
+    setShowQuiz(false)
+    setQuizCourse("")
+  }
+
+  // If showing quiz, show quiz page
+  if (showQuiz && quizCourse) {
+    return <QuizPage course={quizCourse} onBackToDashboard={handleBackToDashboard} />
+  }
+
   // If logged in, show dashboard
-  if (isLoggedIn) {
-    return <Dashboard onLogout={handleLogout} />
+  if (isLoggedIn && currentUser) {
+    return <Dashboard user={currentUser} onLogout={handleLogout} onShowQuiz={handleShowQuiz} />
+  }
+
+  // If showing signup, show signup page
+  if (showSignup) {
+    return <Signup onBackToLogin={handleBackToLogin} />
   }
 
   // Otherwise, show login form
@@ -92,13 +146,18 @@ function App() {
                   <input
                     id="email"
                     type="email"
-                    placeholder="Enter your email"
+                    placeholder="Enter your email address"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="form-input"
                     required
                   />
                 </div>
+                {emailError && (
+                  <p style={{ color: 'red', fontSize: '14px', marginTop: '5px' }}>
+                    {emailError}
+                  </p>
+                )}
               </div>
 
               <div className="form-group">
@@ -170,7 +229,7 @@ function App() {
                 <button
                   type="button"
                   className="signup-link"
-                  onClick={() => alert("Sign up functionality would be implemented here")}
+                  onClick={handleShowSignup}
                 >
                   Sign up
                 </button>
