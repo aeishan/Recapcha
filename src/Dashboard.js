@@ -1,9 +1,8 @@
 import React, { useState } from "react"
 import './App.css'
 
-function Dashboard({ onLogout }) {
+function Dashboard({ user, onLogout }) {
   const [isRecording, setIsRecording] = useState(false)
-  const [user] = useState({ name: "John Doe", email: "john@example.com" })
 
   const handleStartRecording = () => {
     setIsRecording(!isRecording)
@@ -53,6 +52,10 @@ function Dashboard({ onLogout }) {
     },
   ]
 
+  // Get full name from user data
+  const fullName = `${user.firstName} ${user.lastName}`
+  const firstName = user.firstName
+
   return (
     <div className="dashboard-container">
       {/* Header */}
@@ -80,7 +83,7 @@ function Dashboard({ onLogout }) {
             {/* User Menu */}
             <div className="user-section">
               <div className="user-info">
-                <p className="user-name">{user.name}</p>
+                <p className="user-name">{fullName}</p>
                 <p className="user-email">{user.email}</p>
               </div>
               <div className="user-avatar">
@@ -97,7 +100,7 @@ function Dashboard({ onLogout }) {
       <div className="dashboard-content">
         {/* Welcome Section */}
         <div className="welcome-section">
-          <h2 className="welcome-title">Welcome back, {user.name.split(" ")[0]}! 👋</h2>
+          <h2 className="welcome-title">Welcome back, {firstName}! 👋</h2>
           <p className="welcome-subtitle">Ready to continue your learning journey? Here's what's happening today.</p>
         </div>
 
