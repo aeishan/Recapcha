@@ -9,9 +9,24 @@ function App() {
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [emailError, setEmailError] = useState("")
+
+  // Email validation function
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setEmailError("") // Clear previous errors
+    
+    // Check if email is valid format
+    if (!isValidEmail(email)) {
+      setEmailError('Please enter a valid email address')
+      return
+    }
+    
     setIsLoading(true)
 
     // Simulate API call
@@ -29,6 +44,7 @@ function App() {
     setEmail("")
     setPassword("")
     setRememberMe(false)
+    setEmailError("") // Clear email error on logout
     console.log("User logged out")
   }
 
@@ -67,13 +83,18 @@ function App() {
                   <input
                     id="email"
                     type="email"
-                    placeholder="Enter your email"
+                    placeholder="Enter your email address"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="form-input"
                     required
                   />
                 </div>
+                {emailError && (
+                  <p style={{ color: 'red', fontSize: '14px', marginTop: '5px' }}>
+                    {emailError}
+                  </p>
+                )}
               </div>
 
               <div className="form-group">
