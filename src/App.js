@@ -38,19 +38,32 @@ function App() {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1500))
 
-    // Check if user exists in localStorage
-    const users = JSON.parse(localStorage.getItem('users') || '[]')
-    const user = users.find(u => u.email === email && u.password === password)
+    // try{
+    //   const response = await fetch('http://localhost:5050/api/auth/login', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify({ email, password }),
+    //   })
 
-    if (user) {
-      // Login successful
-      console.log("Login successful:", user)
-      setCurrentUser(user)
-      setIsLoggedIn(true)
-    } else {
-      // Login failed
-      setEmailError('Invalid email or password')
-    }
+    //   if (!response.ok) {
+    //     const errorData = await response.json()
+    //     throw new Error(errorData.message || 'Login failed')
+    //   }
+
+    //   const data = await response.json()
+    //   console.log("Login successful:", data)
+    //   setIsLoggedIn(true)
+    //   setIsLoading(false)
+    // } catch (error) {
+    //   console.error("Login error:", error)
+    //   alert("Login failed: " + error.message)
+    //   setIsLoading(false)
+    // }
+
+
+    console.log("Login attempt:", { email, password, rememberMe })
     
     setIsLoading(false)
   }
