@@ -6,7 +6,7 @@ import LoginPage from "./Login.js";
 import QuizPage from "./QuizPage.js";
 import { Routes, Route } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import LiveTranscriber from './LiveTranscriber.js'
+import LiveTranscriber from "./LiveTranscriber.js";
 
 function App() {
   const navigate = useNavigate();
@@ -21,8 +21,8 @@ function App() {
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [emailError, setEmailError] = useState("");
-  const [showTranscriber, setShowTranscriber] = useState(false)
-  
+  const [showTranscriber, setShowTranscriber] = useState(false);
+
   // Email validation function
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -62,7 +62,7 @@ function App() {
       setIsLoggedIn(true);
       setIsLoading(false);
       setCurrentUser(data);
-      
+
       navigate("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
@@ -92,14 +92,13 @@ function App() {
     navigate("/");
   };
 
-
   const handleShowQuiz = (course) => {
     navigate("/quiz");
   };
 
   const handleBackToDashboard = () => {
     navigate("/dashboard");
-  };  
+  };
 
   // 4. Otherwise, show login form
   return (
@@ -122,6 +121,8 @@ function App() {
                 emailError={emailError}
                 isLoading={isLoading}
                 handleShowSignup={handleShowSignup}
+                setCurrentUser={setCurrentUser}
+                setIsLoggedIn={setIsLoggedIn}
               />
             }
           />

@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = ({
   email,
@@ -12,8 +13,25 @@ const LoginPage = ({
   handleSubmit,
   emailError,
   isLoading,
-  handleShowSignup
+  handleShowSignup,
+  setCurrentUser,
+  setIsLoggedIn
 }) => {
+
+    const navigate = useNavigate();
+
+    // Dev login handler (only for login page)
+  const handleDevLogin = () => {
+    setCurrentUser({
+      firstName: 'Dev',
+      lastName: 'User',
+      email: 'dev@localhost',
+      _id: 'dev123',
+      googleClientId: process.env.REACT_APP_GOOGLE_CLIENT_ID // from .env
+    });
+    setIsLoggedIn(true);
+    navigate("/dashboard"); // Redirect to dashboard
+  };
   return (
     <div className="login-container">
       <div className="login-wrapper">
@@ -125,6 +143,14 @@ const LoginPage = ({
                 )}
               </button>
             </form>
+            {/* Dev Login Button: only on login page, bypasses to dashboard */}
+            <button
+              type="button"
+              style={{ marginTop: '10px', background: '#eee', color: '#333', border: '1px solid #ccc' }}
+              onClick={handleDevLogin}
+            >
+              Dev Login (Bypass to Dashboard)
+            </button>
 
             <div className="signup-section">
               <p className="signup-text">
