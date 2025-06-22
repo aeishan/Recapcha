@@ -91,12 +91,7 @@ function App() {
       localStorage.setItem("token", data._id) // use Mongo _id as token
 
 
-      const data = await response.json();
-      setIsLoggedIn(true);
-      setCurrentUser(data);
-      setIsLoading(false);
-      localStorage.setItem("token", data._id); // use Mongo _id as token
-
+    
       navigate("/dashboard");
     } catch (error) {
       console.error("Login error:", error)
