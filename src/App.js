@@ -176,6 +176,8 @@ function App() {
                 user={currentUser}
                 onLogout={handleLogout}
                 onShowQuiz={handleShowQuiz}
+                // Add this prop to open LiveTranscriber page
+                onShowTranscriber={() => navigate("/transcriber")}
               />
             }
           />
