@@ -1,15 +1,55 @@
-import React, { useState } from "react"
+
+import React, { useState, useEffect, useRef } from "react";
 import './App.css'
 import CourseModel from './CourseModel.js';
 import QuizModel from './QuizModel.js';
 import { useNavigate } from "react-router-dom";
+import { gapi } from "gapi-script";
+import GoogleDocButton from "./GoogleDocButton.js";
+  
+  
+const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
+const SCOPES = "https://www.googleapis.com/auth/documents https://www.googleapis.com/auth/drive.file";
 
-function Dashboard({ user, onLogout, onShowQuiz }) {
+function Dashboard({ user, onLogout, onShowQuiz, onShowTranscriber }) {
   const [isRecording, setIsRecording] = useState(false)
   const [showCourseModel, setShowCourseModel] = useState(false)
   const [showQuizModel, setShowQuizModel] = useState(false)
   const [selectedCourse, setSelectedCourse] = useState("")
   const [recordingTimer, setRecordingTimer] = useState(0)
+  
+  const tokenClient = useRef(null);
+  const accessToken = useRef(null);
+
+  useEffect(() => {
+    function start() {
+      gapi.client.init({
+        apiKey: API_KEY,
+        discoveryDocs: ["https://docs.googleapis.com/$discovery/rest?version=v1"],
+      });
+    }
+    gapi.load("client", start);
+
+    // Wait for GIS script to load
+    const interval = setInterval(() => {
+      if (window.google && window.google.accounts && window.google.accounts.oauth2) {
+        tokenClient.current = window.google.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
+          scope: SCOPES,
+          callback: (tokenResponse) => {
+            accessToken.current = tokenResponse.access_token;
+            gapi.client.setToken({ access_token: accessToken.current });
+          },
+        });
+        clearInterval(interval);
+      }
+    }, 100);
+
+    // Cleanup interval on unmount
+    return () => clearInterval(interval);
+  }, []);
+
 
   const navigate = useNavigate()
 
@@ -91,7 +131,7 @@ const firstName = user.firstName;
     { title: "Flashcards Created", value: "156", icon: "📄", trend: "+8%" },
     { title: "Quizzes Completed", value: "18", icon: "🧠", trend: "+15%" },
     { title: "Study Time", value: "42h", icon: "📈", trend: "+23%" },
-  ]
+  ];
 
   const quickActions = [
     {
@@ -99,7 +139,7 @@ const firstName = user.firstName;
       description: "Begin recording and transcribing audio",
       icon: "🎤",
       color: "green",
-      action: () => setShowCourseModel(true),
+      action: onShowTranscriber,
     },
     {
       title: "View Flashcards",
@@ -122,7 +162,7 @@ const firstName = user.firstName;
       color: "orange",
       action: () => console.log("Navigate to Analytics"),
     },
-  ]
+  ];
 
   return (
     <div className="dashboard-container">
@@ -137,23 +177,7 @@ const firstName = user.firstName;
           </div>
 
           <div className="header-actions">
-            {/* Quick Record Button */}
-            <button
-              onClick={handleStartRecording}
-              className={`record-button ${isRecording ? 'recording' : ''}`}
-            >
-              <span className="record-icon">
-                {isRecording ? "⏸️" : "▶️"}
-              </span>
-              {isRecording ? (
-                <span>
-                  Stop Recording ({formatTime(recordingTimer)})
-                  {selectedCourse && ` - ${getCourseName(selectedCourse)}`}
-                </span>
-              ) : (
-                "Quick Record"
-              )}
-            </button>
+
 
             {/* User Menu */}
             <div className="user-section">
@@ -164,7 +188,7 @@ const firstName = user.firstName;
               <div className="user-avatar">
                 <span>👤</span>
               </div>
-              <button className="logout-button" onClick={handleLogout}>
+              <button className="logout-button" onClick={onLogout}>
                 🚪
               </button>
             </div>
@@ -214,6 +238,8 @@ const firstName = user.firstName;
                 </div>
               </div>
             ))}
+            {/* Google Doc Button as a separate component */}
+            <GoogleDocButton />
           </div>
         </div>
 
@@ -299,7 +325,7 @@ const firstName = user.firstName;
         courseName={getCourseName(selectedCourse)}
       />
     </div>
-  )
+  );
 }
 
-export default Dashboard
+export default Dashboard;
