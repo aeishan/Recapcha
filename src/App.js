@@ -3,6 +3,8 @@ import './App.css'
 import Dashboard from './Dashboard.js';
 import Signup from './Signup.js';
 import QuizPage from './QuizPage.js';
+import LiveTranscriber from './LiveTranscriber.js'
+
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -16,7 +18,8 @@ function App() {
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [emailError, setEmailError] = useState("")
-
+  const [showTranscriber, setShowTranscriber] = useState(false)
+ 
   // Email validation function
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -93,6 +96,7 @@ function App() {
     setEmailError("") // Clear any signup errors
   }
 
+
   const handleShowQuiz = (course) => {
     setQuizCourse(course)
     setShowQuiz(true)
@@ -107,18 +111,30 @@ function App() {
   if (showQuiz && quizCourse) {
     return <QuizPage course={quizCourse} onBackToDashboard={handleBackToDashboard} />
   }
+    
+  // 1. If showing transcriber, show it first
+  if (showTranscriber) {
+    return <LiveTranscriber onBack={() => setShowTranscriber(false)} />
+  }    
 
-  // If logged in, show dashboard
+  // 2. If logged in, show dashboard
   if (isLoggedIn && currentUser) {
-    return <Dashboard user={currentUser} onLogout={handleLogout} onShowQuiz={handleShowQuiz} />
+     return (
+      <Dashboard
+        user={currentUser}
+        onShowTranscriber={() => setShowTranscriber(true)}
+        onLogout={handleLogout}
+      />
+    )
+
   }
 
-  // If showing signup, show signup page
+  // 3. If showing signup, show signup page
   if (showSignup) {
     return <Signup onBackToLogin={handleBackToLogin} />
   }
 
-  // Otherwise, show login form
+  // 4. Otherwise, show login form
   return (
     <div className="login-container">
       <div className="login-wrapper">

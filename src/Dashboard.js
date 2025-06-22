@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import './App.css'
 import CourseModel from './CourseModel.js';
@@ -10,7 +11,7 @@ const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
 const SCOPES = "https://www.googleapis.com/auth/documents https://www.googleapis.com/auth/drive.file";
 
-function Dashboard({ user, onLogout, onShowQuiz }) {
+function Dashboard({ user, onLogout, onShowQuiz, onShowTranscriber }) {
   const [isRecording, setIsRecording] = useState(false)
   const [showCourseModel, setShowCourseModel] = useState(false)
   const [showQuizModel, setShowQuizModel] = useState(false)
@@ -128,7 +129,7 @@ function Dashboard({ user, onLogout, onShowQuiz }) {
       description: "Begin recording and transcribing audio",
       icon: "🎤",
       color: "green",
-      action: () => setShowCourseModel(true),
+      action: onShowTranscriber,
     },
     {
       title: "View Flashcards",
@@ -153,7 +154,6 @@ function Dashboard({ user, onLogout, onShowQuiz }) {
     },
   ];
 
-  // Get full name from user data
   const fullName = `${user.firstName} ${user.lastName}`
   const firstName = user.firstName
 
@@ -170,23 +170,7 @@ function Dashboard({ user, onLogout, onShowQuiz }) {
           </div>
 
           <div className="header-actions">
-            {/* Quick Record Button */}
-            <button
-              onClick={handleStartRecording}
-              className={`record-button ${isRecording ? 'recording' : ''}`}
-            >
-              <span className="record-icon">
-                {isRecording ? "⏸️" : "▶️"}
-              </span>
-              {isRecording ? (
-                <span>
-                  Stop Recording ({formatTime(recordingTimer)})
-                  {selectedCourse && ` - ${getCourseName(selectedCourse)}`}
-                </span>
-              ) : (
-                "Quick Record"
-              )}
-            </button>
+
 
             {/* User Menu */}
             <div className="user-section">
@@ -197,7 +181,7 @@ function Dashboard({ user, onLogout, onShowQuiz }) {
               <div className="user-avatar">
                 <span>👤</span>
               </div>
-              <button className="logout-button" onClick={handleLogout}>
+              <button className="logout-button" onClick={onLogout}>
                 🚪
               </button>
             </div>
