@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import './App.css';
 import { gapi } from "gapi-script";
+import GoogleDocButton from "./GoogleDocButton";
 
 const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
@@ -50,47 +51,12 @@ function Dashboard({ onLogout }) {
     onLogout();
   };
 
-  const handleCreateDoc = async () => {
-    if (!accessToken.current) {
-      // Prompt user to sign in and get access token
-      if (tokenClient.current) {
-        tokenClient.current.requestAccessToken();
-      } else {
-        alert("Google Identity Services not loaded yet. Please try again.");
-      }
-      return;
-    }
-
-    // Create a new Google Doc
-    const response = await gapi.client.docs.documents.create({
-      title: "Sample Google Doc from React",
-    });
-
-    const documentId = response.result.documentId;
-
-    // Add sample content to the doc
-    await gapi.client.docs.documents.batchUpdate({
-      documentId,
-      requests: [
-        {
-          insertText: {
-            location: { index: 1 },
-            text: "Hello from your React app! 🚀\nThis is a sample Google Doc created via the API.",
-          },
-        },
-      ],
-    });
-
-    // Open the new doc in a new tab
-    window.open(`https://docs.google.com/document/d/${documentId}/edit`, "_blank");
-  };
-
   const stats = [
     { title: "Total Sessions", value: "24", icon: "⏰", trend: "+12%" },
     { title: "Flashcards Created", value: "156", icon: "📄", trend: "+8%" },
     { title: "Quizzes Completed", value: "18", icon: "🧠", trend: "+15%" },
     { title: "Study Time", value: "42h", icon: "📈", trend: "+23%" },
-  ]
+  ];
 
   const quickActions = [
     {
@@ -121,7 +87,7 @@ function Dashboard({ onLogout }) {
       color: "orange",
       action: () => console.log("Navigate to Analytics"),
     },
-  ]
+  ];
 
   return (
     <div className="dashboard-container">
@@ -206,19 +172,8 @@ function Dashboard({ onLogout }) {
                 </div>
               </div>
             ))}
-          </div>
-
-          {/* Google Doc Button - Add this button in your Dashboard component (e.g., in Quick Actions or wherever you want) */}
-          <div className="action-card" onClick={handleCreateDoc}>
-            <div className="action-content">
-              <div className={`action-icon purple`}>
-                <span>📄</span>
-              </div>
-              <div className="action-text">
-                <h4 className="action-title">Publish Sample Google Doc</h4>
-                <p className="action-description">Create and publish a sample Google Doc</p>
-              </div>
-            </div>
+            {/* Google Doc Button as a separate component */}
+            <GoogleDocButton />
           </div>
         </div>
 
@@ -290,7 +245,7 @@ function Dashboard({ onLogout }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Dashboard
+export default Dashboard;
