@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import './App.css'
 import CourseModel from './CourseModel.js';
 import QuizModel from './QuizModel.js';
+import { useNavigate } from "react-router-dom";
 import { gapi } from "gapi-script";
 import GoogleDocButton from "./GoogleDocButton.js";
   
@@ -50,6 +51,14 @@ function Dashboard({ user, onLogout, onShowQuiz, onShowTranscriber }) {
   }, []);
 
 
+  const navigate = useNavigate()
+
+  if (!user) return null;
+
+// Now safe to access user fields
+const fullName = `${user.firstName} ${user.lastName}`;
+const firstName = user.firstName;
+
   const handleStartRecording = () => {
     if (!isRecording) {
       setShowCourseModel(true)
@@ -93,9 +102,10 @@ function Dashboard({ user, onLogout, onShowQuiz, onShowTranscriber }) {
   }
 
   const handleLogout = () => {
-    console.log("Logging out...");
-    onLogout();
-  };
+    console.log("Logging out...")
+    onLogout() // Call the logout function passed from App.js
+    setTimeout(() => navigate("/"), 0); // Allow state update to complete
+  }
 
   const getCourseName = (courseId) => {
     const courseNames = {
@@ -153,9 +163,6 @@ function Dashboard({ user, onLogout, onShowQuiz, onShowTranscriber }) {
       action: () => console.log("Navigate to Analytics"),
     },
   ];
-
-  const fullName = `${user.firstName} ${user.lastName}`
-  const firstName = user.firstName
 
   return (
     <div className="dashboard-container">
