@@ -3,7 +3,7 @@ import './App.css'
 import CourseModel from './CourseModel.js';
 import QuizModel from './QuizModel.js';
 import { gapi } from "gapi-script";
-import GoogleDocButton from "./GoogleDocButton";
+import GoogleDocButton from "./GoogleDocButton.js";
   
   
 const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
