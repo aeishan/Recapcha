@@ -1,13 +1,127 @@
-import React from "react"
-import './App.css'
 
-function Dashboard({ user, onLogout, onShowTranscriber }) {
+import React, { useState, useEffect, useRef } from "react";
+import './App.css'
+import CourseModel from './CourseModel.js';
+import QuizModel from './QuizModel.js';
+import { gapi } from "gapi-script";
+import GoogleDocButton from "./GoogleDocButton.js";
+  
+  
+const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
+const SCOPES = "https://www.googleapis.com/auth/documents https://www.googleapis.com/auth/drive.file";
+
+function Dashboard({ user, onLogout, onShowQuiz, onShowTranscriber }) {
+  const [isRecording, setIsRecording] = useState(false)
+  const [showCourseModel, setShowCourseModel] = useState(false)
+  const [showQuizModel, setShowQuizModel] = useState(false)
+  const [selectedCourse, setSelectedCourse] = useState("")
+  const [recordingTimer, setRecordingTimer] = useState(0)
+  
+  const tokenClient = useRef(null);
+  const accessToken = useRef(null);
+
+  useEffect(() => {
+    function start() {
+      gapi.client.init({
+        apiKey: API_KEY,
+        discoveryDocs: ["https://docs.googleapis.com/$discovery/rest?version=v1"],
+      });
+    }
+    gapi.load("client", start);
+
+    // Wait for GIS script to load
+    const interval = setInterval(() => {
+      if (window.google && window.google.accounts && window.google.accounts.oauth2) {
+        tokenClient.current = window.google.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
+          scope: SCOPES,
+          callback: (tokenResponse) => {
+            accessToken.current = tokenResponse.access_token;
+            gapi.client.setToken({ access_token: accessToken.current });
+          },
+        });
+        clearInterval(interval);
+      }
+    }, 100);
+
+    // Cleanup interval on unmount
+    return () => clearInterval(interval);
+  }, []);
+
+
+  const handleStartRecording = () => {
+    if (!isRecording) {
+      setShowCourseModel(true)
+    } else {
+      // Stop recording
+      setIsRecording(false)
+      setRecordingTimer(0)
+      setShowQuizModel(true)
+    }
+  }
+
+  const handleCourseSelect = (courseId) => {
+    setSelectedCourse(courseId)
+    setIsRecording(true)
+    setShowCourseModel(false)
+    
+    // Start timer simulation
+    const timer = setInterval(() => {
+      setRecordingTimer(prev => prev + 1)
+    }, 1000)
+    
+    // Auto stop after 10 seconds for demo (remove this in real app)
+    setTimeout(() => {
+      clearInterval(timer)
+      if (isRecording) {
+        setIsRecording(false)
+        setRecordingTimer(0)
+        setShowQuizModel(true)
+      }
+    }, 10000)
+  }
+
+  const handleTakeQuiz = () => {
+    setShowQuizModel(false)
+    onShowQuiz(selectedCourse)
+  }
+
+  const handleBackToDashboard = () => {
+    setShowQuizModel(false)
+    setSelectedCourse("")
+  }
+
+  const handleLogout = () => {
+    console.log("Logging out...");
+    onLogout();
+  };
+
+  const getCourseName = (courseId) => {
+    const courseNames = {
+      'calculus': 'Calculus',
+      'linear-algebra': 'Linear Algebra',
+      'biology': 'Biology',
+      'physics': 'Physics',
+      'chemistry': 'Chemistry',
+      'history': 'History',
+      'music': 'Music'
+    }
+    return courseNames[courseId] || courseId
+  }
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins}:${secs.toString().padStart(2, '0')}`
+  }
+
   const stats = [
     { title: "Total Sessions", value: "24", icon: "⏰", trend: "+12%" },
     { title: "Flashcards Created", value: "156", icon: "📄", trend: "+8%" },
     { title: "Quizzes Completed", value: "18", icon: "🧠", trend: "+15%" },
     { title: "Study Time", value: "42h", icon: "📈", trend: "+23%" },
-  ]
+  ];
 
   const quickActions = [
     {
@@ -38,7 +152,7 @@ function Dashboard({ user, onLogout, onShowTranscriber }) {
       color: "orange",
       action: () => console.log("Navigate to Analytics"),
     },
-  ]
+  ];
 
   const fullName = `${user.firstName} ${user.lastName}`
   const firstName = user.firstName
@@ -56,6 +170,9 @@ function Dashboard({ user, onLogout, onShowTranscriber }) {
           </div>
 
           <div className="header-actions">
+
+
+            {/* User Menu */}
             <div className="user-section">
               <div className="user-info">
                 <p className="user-name">{fullName}</p>
@@ -114,6 +231,8 @@ function Dashboard({ user, onLogout, onShowTranscriber }) {
                 </div>
               </div>
             ))}
+            {/* Google Doc Button as a separate component */}
+            <GoogleDocButton />
           </div>
         </div>
 
@@ -184,8 +303,22 @@ function Dashboard({ user, onLogout, onShowTranscriber }) {
           </div>
         </div>
       </div>
+
+      {/* Models */}
+      <CourseModel
+        isOpen={showCourseModel}
+        onClose={() => setShowCourseModel(false)}
+        onSelectCourse={handleCourseSelect}
+      />
+
+      <QuizModel
+        isOpen={showQuizModel}
+        onClose={handleBackToDashboard}
+        onTakeQuiz={handleTakeQuiz}
+        courseName={getCourseName(selectedCourse)}
+      />
     </div>
-  )
+  );
 }
 
-export default Dashboard
+export default Dashboard;

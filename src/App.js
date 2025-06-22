@@ -1,13 +1,17 @@
 import React, { useState } from "react"
 import './App.css'
-import Dashboard from './Dashboard'
-import Signup from './Signup'
-import LiveTranscriber from './LiveTranscriber'
+import Dashboard from './Dashboard.js';
+import Signup from './Signup.js';
+import QuizPage from './QuizPage.js';
+import LiveTranscriber from './LiveTranscriber.js'
+
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
   const [showSignup, setShowSignup] = useState(false)
+  const [showQuiz, setShowQuiz] = useState(false)
+  const [quizCourse, setQuizCourse] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -35,29 +39,46 @@ function App() {
     setIsLoading(true)
 
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    // await new Promise((resolve) => setTimeout(resolve, 1500))
 
-    // Check if user exists in localStorage
-    const users = JSON.parse(localStorage.getItem('users') || '[]')
-    const user = users.find(u => u.email === email && u.password === password)
+    try{
+      const response = await fetch('http://localhost:5050/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      })
 
-    if (user) {
-      // Login successful
-      console.log("Login successful:", user)
-      setCurrentUser(user)
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || 'Login failed')
+      }
+
+      const data = await response.json()
+      console.log("Login successful:", data)
       setIsLoggedIn(true)
-    } else {
-      // Login failed
-      setEmailError('Invalid email or password')
+      setIsLoading(false)
+      setCurrentUser( data )
+
+    } catch (error) {
+      console.error("Login error:", error)
+      alert("Login failed: " + error.message)
+      setIsLoading(false)
     }
+
+
+    // console.log("Login attempt:", { email, password, rememberMe })
     
-    setIsLoading(false)
+    // setIsLoading(false)
   }
 
   const handleLogout = () => {
     setIsLoggedIn(false)
     setCurrentUser(null)
     setShowSignup(false)
+    setShowQuiz(false)
+    setQuizCourse("")
     setEmail("")
     setPassword("")
     setRememberMe(false)
@@ -75,20 +96,37 @@ function App() {
     setEmailError("") // Clear any signup errors
   }
 
+
+  const handleShowQuiz = (course) => {
+    setQuizCourse(course)
+    setShowQuiz(true)
+  }
+
+  const handleBackToDashboard = () => {
+    setShowQuiz(false)
+    setQuizCourse("")
+  }
+
+  // If showing quiz, show quiz page
+  if (showQuiz && quizCourse) {
+    return <QuizPage course={quizCourse} onBackToDashboard={handleBackToDashboard} />
+  }
+    
   // 1. If showing transcriber, show it first
   if (showTranscriber) {
     return <LiveTranscriber onBack={() => setShowTranscriber(false)} />
-  }
+  }    
 
   // 2. If logged in, show dashboard
   if (isLoggedIn && currentUser) {
-    return (
+     return (
       <Dashboard
         user={currentUser}
         onShowTranscriber={() => setShowTranscriber(true)}
         onLogout={handleLogout}
       />
     )
+
   }
 
   // 3. If showing signup, show signup page
@@ -228,7 +266,7 @@ function App() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
