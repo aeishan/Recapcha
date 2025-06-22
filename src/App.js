@@ -4,22 +4,16 @@ import Dashboard from "./Dashboard.js";
 import Signup from "./Signup.js";
 import LoginPage from "./Login.js";
 import QuizPage from "./QuizPage.js";
-import { Routes, Route } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import LiveTranscriber from "./LiveTranscriber.js";
 
 
 function App() {
+  console.log(localStorage.getItem("token")); // Debugging line to check token in localStorage
   const navigate = useNavigate();
-  // Load persisted state from localStorage
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    const stored = localStorage.getItem("isLoggedIn");
-    return stored === "true";
-  });
-  const [currentUser, setCurrentUser] = useState(() => {
-    const stored = localStorage.getItem("currentUser");
-    return stored ? JSON.parse(stored) : null;
-  });
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [authChecked, setAuthChecked] = useState(false); // ✅ NEW
   const [showSignup, setShowSignup] = useState(false);
   const [showQuiz, setShowQuiz] = useState(false);
   const [quizCourse, setQuizCourse] = useState("");
@@ -31,8 +25,34 @@ function App() {
   const [emailError, setEmailError] = useState("");
   const [showTranscriber, setShowTranscriber] = useState(false);
 
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const res = await fetch("http://localhost:5050/api/auth/user/me", {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (!res.ok) throw new Error("Unauthorized");
 
-  // Email validation function
+          const data = await res.json();
+          setCurrentUser(data.user);
+          setIsLoggedIn(true);
+        } catch (err) {
+          console.error("Auth failed:", err);
+          setIsLoggedIn(false);
+          localStorage.removeItem("token");
+        }
+      }
+      setAuthChecked(true); // ✅ wait until check completes
+    };
+
+    checkAuth();
+  }, []);
+
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -41,21 +61,13 @@ function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setEmailError(""); // Clear previous errors
+    setEmailError("");
 
-
-    // Check if email is valid format
     if (!isValidEmail(email)) {
       setEmailError("Please enter a valid email address");
       return;
     }
-
-
     setIsLoading(true);
-
-
-    // Simulate API call
-
 
     try {
       const response = await fetch("http://localhost:5050/api/auth/login", {
@@ -74,11 +86,10 @@ function App() {
 
 
       const data = await response.json();
-      console.log("Login successful:", data);
       setIsLoggedIn(true);
-      setIsLoading(false);
       setCurrentUser(data);
-
+      setIsLoading(false);
+      localStorage.setItem("token", data._id); // use Mongo _id as token
 
       navigate("/dashboard");
     } catch (error) {
@@ -109,34 +120,18 @@ function App() {
     setEmail("");
     setPassword("");
     setRememberMe(false);
-    setEmailError(""); // Clear email error on logout
-    console.log("User logged out");
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("currentUser");
-  };
-
-
-  const handleShowSignup = () => {
-    navigate("/signup");
-  };
-
-
-  const handleBackToLogin = () => {
+    setEmailError("");
+    localStorage.removeItem("token");
     navigate("/");
   };
 
+  const handleShowSignup = () => navigate("/signup");
+  const handleBackToLogin = () => navigate("/");
+  const handleShowQuiz = (course) => navigate("/quiz");
+  const handleBackToDashboard = () => navigate("/dashboard");
 
-  const handleShowQuiz = (course) => {
-    navigate("/quiz");
-  };
+  if (!authChecked) return <div>Loading...</div>; // ⏳ Wait for auth check
 
-
-  const handleBackToDashboard = () => {
-    navigate("/dashboard");
-  };
-
-
-  // 4. Otherwise, show login form
   return (
     <Routes>
       {!isLoggedIn ? (
@@ -162,10 +157,7 @@ function App() {
               />
             }
           />
-          <Route
-            path="/signup"
-            element={<Signup onBackToLogin={handleBackToLogin} />}
-          />
+          <Route path="/signup" element={<Signup onBackToLogin={handleBackToLogin} />} />
         </>
       ) : (
         <>
@@ -181,16 +173,12 @@ function App() {
               />
             }
           />
-          <Route
-            path="/quiz"
-            element={<QuizPage onBackToDashboard={handleBackToDashboard} />}
-          />
-          <Route
-            path="/transcriber"
-            element={<LiveTranscriber onBack={() => navigate("/dashboard")} />}
-          />
+          <Route path="/quiz" element={<QuizPage onBackToDashboard={handleBackToDashboard} />} />
+          <Route path="/transcriber" element={<LiveTranscriber onBack={() => navigate("/dashboard")} />} />
         </>
       )}
+      {/* 🚨 Catch-all route */}
+      <Route path="*" element={<Navigate to={isLoggedIn ? "/dashboard" : "/"} />} />
     </Routes>
   );
 }
