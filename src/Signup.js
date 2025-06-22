@@ -24,54 +24,34 @@ function Signup({ onBackToLogin, onSignupSuccess }) {
     setEmailError("");
     setPasswordError("");
   
-    // ✅ Validate email format
     if (!isValidEmail(email)) {
       setEmailError('Please enter a valid email address');
       return;
     }
-  
-    // ✅ Validate password match
     if (password !== confirmPassword) {
       setPasswordError('Passwords do not match');
       return;
     }
-  
-    // ✅ Validate password length
     if (password.length < 6) {
       setPasswordError('Password must be at least 6 characters long');
       return;
     }
-  
     setIsLoading(true);
-  
     try {
       const response = await fetch('http://localhost:5050/api/auth/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          email,
-          password,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ firstName, lastName, email, password }),
       });
-  
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Registration failed');
       }
-  
-      const data = await response.json();
-      console.log("Signup successful:", data);
-  
       setIsLoading(false);
       alert("Account created successfully! Please sign in.");
-      onBackToLogin(); // 👈 Navigate back to login screen
+      onBackToLogin();
     } catch (error) {
-      console.error("Signup error:", error);
-      setEmailError(error.message); // You could adjust this based on error type
+      setEmailError(error.message);
       setIsLoading(false);
     }
   };
@@ -82,10 +62,15 @@ function Signup({ onBackToLogin, onSignupSuccess }) {
         {/* Logo/Brand Section */}
         <div className="brand-section">
           <div className="logo-container">
-            <div className="logo-icon">🏢</div>
+            {/* Green Pineapple SVG */}
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <ellipse cx="24" cy="32" rx="12" ry="14" fill="#27ae60" />
+              <path d="M24 10 L28 20 L20 20 Z" fill="#229954" />
+              <path d="M24 6 L26 14 L22 14 Z" fill="#229954" />
+              <path d="M24 2 L25 8 L23 8 Z" fill="#229954" />
+            </svg>
           </div>
-          <h1 className="brand-title">Create Account</h1>
-          <p className="brand-subtitle">Join us today and start your journey</p>
+          <h1 className="brand-title">Recapcha</h1>
         </div>
 
         <div className="login-card">
@@ -103,7 +88,10 @@ function Signup({ onBackToLogin, onSignupSuccess }) {
                     First Name
                   </label>
                   <div className="input-container">
-                    <span className="input-icon">👤</span>
+                    {/* User Icon */}
+                    <span className="input-icon" style={{ display: "flex", alignItems: "center" }}>
+                      <svg width="18" height="18" fill="none" stroke="#888" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 8-4 8-4s8 0 8 4"/></svg>
+                    </span>
                     <input
                       id="firstName"
                       type="text"
@@ -115,13 +103,15 @@ function Signup({ onBackToLogin, onSignupSuccess }) {
                     />
                   </div>
                 </div>
-
                 <div className="form-group" style={{ flex: 1 }}>
                   <label htmlFor="lastName" className="form-label">
                     Last Name
                   </label>
                   <div className="input-container">
-                    <span className="input-icon">👤</span>
+                    {/* User Icon */}
+                    <span className="input-icon" style={{ display: "flex", alignItems: "center" }}>
+                      <svg width="18" height="18" fill="none" stroke="#888" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 8-4 8-4s8 0 8 4"/></svg>
+                    </span>
                     <input
                       id="lastName"
                       type="text"
@@ -141,7 +131,10 @@ function Signup({ onBackToLogin, onSignupSuccess }) {
                   Email Address
                 </label>
                 <div className="input-container">
-                  <span className="input-icon">📧</span>
+                  {/* Email Icon */}
+                  <span className="input-icon" style={{ display: "flex", alignItems: "center" }}>
+                    <svg width="18" height="18" fill="none" stroke="#888" strokeWidth="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2" /><polyline points="2,7 12,13 22,7" /></svg>
+                  </span>
                   <input
                     id="email"
                     type="email"
@@ -165,7 +158,10 @@ function Signup({ onBackToLogin, onSignupSuccess }) {
                   Password
                 </label>
                 <div className="input-container">
-                  <span className="input-icon">🔒</span>
+                  {/* Lock Icon */}
+                  <span className="input-icon" style={{ display: "flex", alignItems: "center" }}>
+                    <svg width="18" height="18" fill="none" stroke="#888" strokeWidth="2" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="7" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  </span>
                   <input
                     id="password"
                     type={showPassword ? "text" : "password"}
@@ -179,8 +175,14 @@ function Signup({ onBackToLogin, onSignupSuccess }) {
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="password-toggle"
+                    aria-label="Toggle password visibility"
+                    style={{ background: "none", border: "none", marginLeft: 6, cursor: "pointer" }}
                   >
-                    {showPassword ? "🙈" : "👁️"}
+                    {showPassword ? (
+                      <svg width="18" height="18" fill="none" stroke="#888" strokeWidth="2" viewBox="0 0 24 24"><path d="M1 1l22 22"/><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-5 0-9.27-3.11-11-7.5a11.05 11.05 0 0 1 5.17-5.92"/><path d="M9.53 9.53A3 3 0 0 0 12 15a3 3 0 0 0 2.47-5.47"/></svg>
+                    ) : (
+                      <svg width="18" height="18" fill="none" stroke="#888" strokeWidth="2" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="10" ry="7"/><circle cx="12" cy="12" r="3"/></svg>
+                    )}
                   </button>
                 </div>
               </div>
@@ -191,7 +193,10 @@ function Signup({ onBackToLogin, onSignupSuccess }) {
                   Confirm Password
                 </label>
                 <div className="input-container">
-                  <span className="input-icon">🔒</span>
+                  {/* Lock Icon */}
+                  <span className="input-icon" style={{ display: "flex", alignItems: "center" }}>
+                    <svg width="18" height="18" fill="none" stroke="#888" strokeWidth="2" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="7" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  </span>
                   <input
                     id="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
@@ -205,8 +210,14 @@ function Signup({ onBackToLogin, onSignupSuccess }) {
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="password-toggle"
+                    aria-label="Toggle confirm password visibility"
+                    style={{ background: "none", border: "none", marginLeft: 6, cursor: "pointer" }}
                   >
-                    {showConfirmPassword ? "🙈" : "👁️"}
+                    {showConfirmPassword ? (
+                      <svg width="18" height="18" fill="none" stroke="#888" strokeWidth="2" viewBox="0 0 24 24"><path d="M1 1l22 22"/><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-5 0-9.27-3.11-11-7.5a11.05 11.05 0 0 1 5.17-5.92"/><path d="M9.53 9.53A3 3 0 0 0 12 15a3 3 0 0 0 2.47-5.47"/></svg>
+                    ) : (
+                      <svg width="18" height="18" fill="none" stroke="#888" strokeWidth="2" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="10" ry="7"/><circle cx="12" cy="12" r="3"/></svg>
+                    )}
                   </button>
                 </div>
                 {passwordError && (
@@ -247,13 +258,9 @@ function Signup({ onBackToLogin, onSignupSuccess }) {
           </div>
         </div>
 
-        <div className="footer">
-          <p className="footer-copyright">© 2024 Your Company. All rights reserved.</p>
-          <div className="footer-links">
-            <button className="footer-link">Privacy Policy</button>
-            <button className="footer-link">Terms of Service</button>
-            <button className="footer-link">Support</button>
-          </div>
+        {/* Minimal Footer */}
+        <div className="footer" style={{ textAlign: "center", marginTop: 32, color: "#229954", fontWeight: 600 }}>
+          Green Pineapple SpurHacks 2025
         </div>
       </div>
     </div>
