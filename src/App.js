@@ -1,8 +1,8 @@
 import React, { useState } from "react"
 import './App.css'
-import Dashboard from './Dashboard'
-import Signup from './Signup'
-import QuizPage from './QuizPage'
+import Dashboard from './Dashboard.js';
+import Signup from './Signup.js';
+import QuizPage from './QuizPage.js';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -56,7 +56,8 @@ function App() {
       console.log("Login successful:", data)
       setIsLoggedIn(true)
       setIsLoading(false)
-      setCurrentUser( data.user )
+      setCurrentUser( data )
+
     } catch (error) {
       console.error("Login error:", error)
       alert("Login failed: " + error.message)
