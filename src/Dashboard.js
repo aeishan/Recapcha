@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import './App.css'
 import CourseModel from './CourseModel.js';
 import QuizModel from './QuizModel.js';
+import { useNavigate } from "react-router-dom";
 
 function Dashboard({ user, onLogout, onShowQuiz }) {
   const [isRecording, setIsRecording] = useState(false)
@@ -9,6 +10,14 @@ function Dashboard({ user, onLogout, onShowQuiz }) {
   const [showQuizModel, setShowQuizModel] = useState(false)
   const [selectedCourse, setSelectedCourse] = useState("")
   const [recordingTimer, setRecordingTimer] = useState(0)
+
+  const navigate = useNavigate()
+
+  if (!user) return null;
+
+// Now safe to access user fields
+const fullName = `${user.firstName} ${user.lastName}`;
+const firstName = user.firstName;
 
   const handleStartRecording = () => {
     if (!isRecording) {
@@ -55,6 +64,7 @@ function Dashboard({ user, onLogout, onShowQuiz }) {
   const handleLogout = () => {
     console.log("Logging out...")
     onLogout() // Call the logout function passed from App.js
+    setTimeout(() => navigate("/"), 0); // Allow state update to complete
   }
 
   const getCourseName = (courseId) => {
@@ -113,10 +123,6 @@ function Dashboard({ user, onLogout, onShowQuiz }) {
       action: () => console.log("Navigate to Analytics"),
     },
   ]
-
-  // Get full name from user data
-  const fullName = `${user.firstName} ${user.lastName}`
-  const firstName = user.firstName
 
   return (
     <div className="dashboard-container">
