@@ -69,7 +69,25 @@ export default function LiveTranscriber({ onBack }) {
       borderRadius: 12,
       boxShadow: "0 2px 16px rgba(0,0,0,0.07)"
     }}>
-      <button onClick={onBack} style={{ marginBottom: 20 }}>← Back to Dashboard</button>
+      <button
+        onClick={onBack}
+        style={{
+          marginBottom: 20,
+          padding: "12px 32px",
+          background: "#3498db",
+          color: "#fff",
+          border: "none",
+          borderRadius: 8,
+          fontSize: "1rem",
+          fontWeight: 500,
+          cursor: "pointer",
+          transition: "background 0.2s"
+        }}
+        onMouseOver={e => (e.currentTarget.style.background = "#2176bd")}
+        onMouseOut={e => (e.currentTarget.style.background = "#3498db")}
+      >
+        ← Back to Dashboard
+      </button>
       <h1 style={{ textAlign: "center", marginBottom: 32 }}>Live Transcriber</h1>
       <button
         onClick={handleStartRecording}
