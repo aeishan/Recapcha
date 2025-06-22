@@ -1,5 +1,5 @@
 import "./App.css";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Dashboard from "./Dashboard.js";
 import Signup from "./Signup.js";
 import LoginPage from "./Login.js";
@@ -8,10 +8,18 @@ import { Routes, Route } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import LiveTranscriber from "./LiveTranscriber.js";
 
+
 function App() {
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
+  // Load persisted state from localStorage
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    const stored = localStorage.getItem("isLoggedIn");
+    return stored === "true";
+  });
+  const [currentUser, setCurrentUser] = useState(() => {
+    const stored = localStorage.getItem("currentUser");
+    return stored ? JSON.parse(stored) : null;
+  });
   const [showSignup, setShowSignup] = useState(false);
   const [showQuiz, setShowQuiz] = useState(false);
   const [quizCourse, setQuizCourse] = useState("");
@@ -23,15 +31,18 @@ function App() {
   const [emailError, setEmailError] = useState("");
   const [showTranscriber, setShowTranscriber] = useState(false);
 
+
   // Email validation function
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setEmailError(""); // Clear previous errors
+
 
     // Check if email is valid format
     if (!isValidEmail(email)) {
@@ -39,9 +50,12 @@ function App() {
       return;
     }
 
+
     setIsLoading(true);
 
+
     // Simulate API call
+
 
     try {
       const response = await fetch("http://localhost:5050/api/auth/login", {
@@ -52,16 +66,19 @@ function App() {
         body: JSON.stringify({ email, password }),
       });
 
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Login failed");
       }
+
 
       const data = await response.json();
       console.log("Login successful:", data);
       setIsLoggedIn(true);
       setIsLoading(false);
       setCurrentUser(data);
+
 
       navigate("/dashboard");
     } catch (error) {
@@ -70,6 +87,18 @@ function App() {
       setIsLoading(false);
     }
   };
+
+
+  // Persist login state to localStorage
+  useEffect(() => {
+    localStorage.setItem("isLoggedIn", isLoggedIn);
+    if (currentUser) {
+      localStorage.setItem("currentUser", JSON.stringify(currentUser));
+    } else {
+      localStorage.removeItem("currentUser");
+    }
+  }, [isLoggedIn, currentUser]);
+
 
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -82,23 +111,30 @@ function App() {
     setRememberMe(false);
     setEmailError(""); // Clear email error on logout
     console.log("User logged out");
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("currentUser");
   };
+
 
   const handleShowSignup = () => {
     navigate("/signup");
   };
 
+
   const handleBackToLogin = () => {
     navigate("/");
   };
+
 
   const handleShowQuiz = (course) => {
     navigate("/quiz");
   };
 
+
   const handleBackToDashboard = () => {
     navigate("/dashboard");
   };
+
 
   // 4. Otherwise, show login form
   return (
@@ -156,5 +192,6 @@ function App() {
     </Routes>
   );
 }
+
 
 export default App;
