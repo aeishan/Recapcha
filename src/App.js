@@ -7,6 +7,7 @@ import QuizPage from "./QuizPage.js";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import LiveTranscriber from "./LiveTranscriber.js";
 
+
 function App() {
   console.log(localStorage.getItem("token")); // Debugging line to check token in localStorage
   const navigate = useNavigate();
@@ -57,9 +58,11 @@ function App() {
     return emailRegex.test(email);
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setEmailError("");
+
     if (!isValidEmail(email)) {
       setEmailError("Please enter a valid email address");
       return;
@@ -75,16 +78,19 @@ function App() {
         body: JSON.stringify({ email, password }),
       });
 
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Login failed");
       }
+
 
       const data = await response.json();
       setIsLoggedIn(true);
       setCurrentUser(data);
       setIsLoading(false);
       localStorage.setItem("token", data._id); // use Mongo _id as token
+
       navigate("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
@@ -92,6 +98,18 @@ function App() {
       setIsLoading(false);
     }
   };
+
+
+  // Persist login state to localStorage
+  useEffect(() => {
+    localStorage.setItem("isLoggedIn", isLoggedIn);
+    if (currentUser) {
+      localStorage.setItem("currentUser", JSON.stringify(currentUser));
+    } else {
+      localStorage.removeItem("currentUser");
+    }
+  }, [isLoggedIn, currentUser]);
+
 
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -150,6 +168,8 @@ function App() {
                 user={currentUser}
                 onLogout={handleLogout}
                 onShowQuiz={handleShowQuiz}
+                // Add this prop to open LiveTranscriber page
+                onShowTranscriber={() => navigate("/transcriber")}
               />
             }
           />
@@ -162,5 +182,6 @@ function App() {
     </Routes>
   );
 }
+
 
 export default App;
