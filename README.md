@@ -1,72 +1,170 @@
-# Getting Started with Create React App
- we gonna win
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# 🧠 Recapcha
 
-obeyad was here
-## Available Scripts. 
+**Recapcha** is a full-stack web app that helps students convert their notes into quizzes for more effective studying. Write or upload your notes, and Recapcha will intelligently create quiz questions to test your memory and reinforce learning.
 
+---
 
-In the project directory, you can run:
+## 🚀 Features
 
-### `npm start`
+- 📝 Save and manage plain text notes
+- 🧠 Automatically generate quizzes based on notes
+- 🔐 User authentication (Register / Login)
+- 📎 Associate quizzes with their original notes
+- ⏬ Download `.txt` notes or `.json` quizzes
+- 🧑‍💻 Built with MERN Stack (MongoDB, Express, React Native, Node.js)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 📁 Folder Structure
 
-### `npm test`
+```bash
+Recapcha/
+├── client/             # React Native frontend
+│   ├── screens/        # App screens (Home, Login, Register, etc.)
+│   ├── components/     # Shared UI components
+│   ├── types/          # TypeScript types
+│   └── ...             # Additional client logic
+├── server/             # Node.js + Express backend
+│   ├── models/         # Mongoose models (User, Note, Quiz)
+│   ├── routes/         # API endpoints
+│   └── app.js          # Server entry point
+├── .env                # Environment variables
+└── README.md           # Project documentation
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## 🧑‍💻 Tech Stack
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+| Layer        | Technology          |
+|--------------|---------------------|
+| Frontend     | React Native (Expo) |
+| Backend      | Node.js + Express   |
+| Database     | MongoDB + Mongoose  |
+| Auth         | Custom Bearer Token |
+| Language     | TypeScript & JavaScript |
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## ⚙️ Setup Instructions
 
-### `npm run eject`
+### 📦 Prerequisites
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- Node.js (v18+ recommended)
+- MongoDB (local or Atlas)
+- Expo CLI: `npm install -g expo-cli`
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 🛠️ Backend Setup
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```bash
+cd server
+npm install
+npm run dev
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Create a `.env` file inside the `/server` folder:
 
-## Learn More
+```env
+MONGO_URI=mongodb://localhost:27017/recapcha
+PORT=5050
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### 📱 Frontend Setup
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```bash
+cd client
+npm install
+npx expo start
+```
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 🔐 Authentication Flow
 
-### Analyzing the Bundle Size
+- Upon login, the user receives a simple token (user ID)
+- This token is stored in `localStorage` on the device
+- It is sent in the `Authorization: Bearer <token>` header for all secured requests
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+## 📡 API Endpoints
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Auth
 
-### Advanced Configuration
+```http
+POST   /api/auth/register     # Register new user
+POST   /api/auth/login        # Login and get token
+GET    /api/auth/user/me      # Get current logged-in user (via token)
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### Notes
 
-### Deployment
+```http
+POST   /api/notes             # Create new note (requires token)
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### Quizzes
 
-### `npm run build` fails to minify
+```http
+POST   /api/quizzes           # Create new quiz associated with a note (requires token)
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
+
+## 📦 Data Structure
+
+### 📄 Note
+
+```ts
+{
+  uuid: string;
+  txt: string;
+  createdAt: Date;
+}
+```
+
+### ❓ Quiz
+
+```ts
+{
+  q: string;
+  a: {
+    a1: boolean;
+    a2: boolean;
+    a3: boolean;
+    a4: boolean;
+  };
+  note: string;       // references note UUID
+  user: string;       // user UUID
+  createdAt: Date;
+}
+```
+
+---
+
+## 🧪 How It Works
+
+1. **User creates a note** → Stored in backend and linked to user
+2. **User generates a quiz** → Tied to the specific note
+3. Both are stored and retrievable per user
+4. Downloads available as `.txt` and `.json`
+
+---
+
+## 📌 Notes
+
+- Notes and quizzes are embedded arrays in the User schema
+- Quizzes reference notes via UUID (fastest for embedded schema)
+- Authentication is simplified with user ID tokens
+
+---
+
+## 🙌 Author
+
+Made with ❤️ by [@aeishan](https://github.com/aeishan)
+
+---
+
+## 📃 License
+
+This project is licensed under the [MIT License](LICENSE)
