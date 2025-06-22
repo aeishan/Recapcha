@@ -1,19 +1,89 @@
-import React, { useState } from "react"
-import './App.css'
+import React, { useState, useEffect, useRef } from "react";
+import './App.css';
+import { gapi } from "gapi-script";
+
+const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
+const SCOPES = "https://www.googleapis.com/auth/documents https://www.googleapis.com/auth/drive.file";
 
 function Dashboard({ onLogout }) {
-  const [isRecording, setIsRecording] = useState(false)
-  const [user] = useState({ name: "John Doe", email: "john@example.com" })
+  const [isRecording, setIsRecording] = useState(false);
+  const [user] = useState({ name: "John Doe", email: "john@example.com" });
+  const tokenClient = useRef(null);
+  const accessToken = useRef(null);
+
+  useEffect(() => {
+    function start() {
+      gapi.client.init({
+        apiKey: API_KEY,
+        discoveryDocs: ["https://docs.googleapis.com/$discovery/rest?version=v1"],
+      });
+    }
+    gapi.load("client", start);
+
+    // Wait for GIS script to load
+    const interval = setInterval(() => {
+      if (window.google && window.google.accounts && window.google.accounts.oauth2) {
+        tokenClient.current = window.google.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
+          scope: SCOPES,
+          callback: (tokenResponse) => {
+            accessToken.current = tokenResponse.access_token;
+            gapi.client.setToken({ access_token: accessToken.current });
+          },
+        });
+        clearInterval(interval);
+      }
+    }, 100);
+
+    // Cleanup interval on unmount
+    return () => clearInterval(interval);
+  }, []);
 
   const handleStartRecording = () => {
-    setIsRecording(!isRecording)
-    console.log(isRecording ? "Stopping recording..." : "Starting recording...")
-  }
+    setIsRecording(!isRecording);
+    console.log(isRecording ? "Stopping recording..." : "Starting recording...");
+  };
 
   const handleLogout = () => {
-    console.log("Logging out...")
-    onLogout() // Call the logout function passed from App.js
-  }
+    console.log("Logging out...");
+    onLogout();
+  };
+
+  const handleCreateDoc = async () => {
+    if (!accessToken.current) {
+      // Prompt user to sign in and get access token
+      if (tokenClient.current) {
+        tokenClient.current.requestAccessToken();
+      } else {
+        alert("Google Identity Services not loaded yet. Please try again.");
+      }
+      return;
+    }
+
+    // Create a new Google Doc
+    const response = await gapi.client.docs.documents.create({
+      title: "Sample Google Doc from React",
+    });
+
+    const documentId = response.result.documentId;
+
+    // Add sample content to the doc
+    await gapi.client.docs.documents.batchUpdate({
+      documentId,
+      requests: [
+        {
+          insertText: {
+            location: { index: 1 },
+            text: "Hello from your React app! 🚀\nThis is a sample Google Doc created via the API.",
+          },
+        },
+      ],
+    });
+
+    // Open the new doc in a new tab
+    window.open(`https://docs.google.com/document/d/${documentId}/edit`, "_blank");
+  };
 
   const stats = [
     { title: "Total Sessions", value: "24", icon: "⏰", trend: "+12%" },
@@ -136,6 +206,19 @@ function Dashboard({ onLogout }) {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Google Doc Button - Add this button in your Dashboard component (e.g., in Quick Actions or wherever you want) */}
+          <div className="action-card" onClick={handleCreateDoc}>
+            <div className="action-content">
+              <div className={`action-icon purple`}>
+                <span>📄</span>
+              </div>
+              <div className="action-text">
+                <h4 className="action-title">Publish Sample Google Doc</h4>
+                <p className="action-description">Create and publish a sample Google Doc</p>
+              </div>
+            </div>
           </div>
         </div>
 
