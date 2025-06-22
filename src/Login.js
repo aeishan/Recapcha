@@ -30,6 +30,7 @@ const LoginPage = ({
       googleClientId: process.env.REACT_APP_GOOGLE_CLIENT_ID // from .env
     });
     setIsLoggedIn(true);
+    localStorage.setItem("token", "dev-token-123");
     navigate("/dashboard"); // Redirect to dashboard
   };
   return (
