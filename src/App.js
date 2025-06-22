@@ -1,8 +1,8 @@
 import React, { useState } from "react"
 import './App.css'
-import Dashboard from './Dashboard'
-import Signup from './Signup'
-import QuizPage from './QuizPage'
+import Dashboard from './Dashboard.js';
+import Signup from './Signup.js';
+import QuizPage from './QuizPage.js';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -36,36 +36,38 @@ function App() {
     setIsLoading(true)
 
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    // await new Promise((resolve) => setTimeout(resolve, 1500))
 
-    // try{
-    //   const response = await fetch('http://localhost:5050/api/auth/login', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({ email, password }),
-    //   })
+    try{
+      const response = await fetch('http://localhost:5050/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      })
 
-    //   if (!response.ok) {
-    //     const errorData = await response.json()
-    //     throw new Error(errorData.message || 'Login failed')
-    //   }
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || 'Login failed')
+      }
 
-    //   const data = await response.json()
-    //   console.log("Login successful:", data)
-    //   setIsLoggedIn(true)
-    //   setIsLoading(false)
-    // } catch (error) {
-    //   console.error("Login error:", error)
-    //   alert("Login failed: " + error.message)
-    //   setIsLoading(false)
-    // }
+      const data = await response.json()
+      console.log("Login successful:", data)
+      setIsLoggedIn(true)
+      setIsLoading(false)
+      setCurrentUser( data )
+
+    } catch (error) {
+      console.error("Login error:", error)
+      alert("Login failed: " + error.message)
+      setIsLoading(false)
+    }
 
 
-    console.log("Login attempt:", { email, password, rememberMe })
+    // console.log("Login attempt:", { email, password, rememberMe })
     
-    setIsLoading(false)
+    // setIsLoading(false)
   }
 
   const handleLogout = () => {

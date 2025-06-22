@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import './App.css'
-import CourseModel from './CourseModel'
-import QuizModel from './QuizModel'
+import CourseModel from './CourseModel.js';
+import QuizModel from './QuizModel.js';
 
 function Dashboard({ user, onLogout, onShowQuiz }) {
   const [isRecording, setIsRecording] = useState(false)
