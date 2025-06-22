@@ -55,4 +55,22 @@ router.post('/register', async (req, res) => {
     }
 });
 
+router.get('/user/me', async (req, res) => {
+    const authHeader = req.headers.authorization;
+    const userId = authHeader?.split(' ')[1];
+  
+    if (!userId) return res.status(401).json({ message: "No token provided" });
+  
+    try {
+      const user = await User.findById(userId).select("-password");
+      if (!user) return res.status(404).json({ message: "User not found" });
+  
+      res.json({ user });
+    } catch (err) {
+      console.error("Error finding user by ID:", err);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+
 export default router;

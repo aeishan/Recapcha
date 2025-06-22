@@ -1,13 +1,14 @@
-"use client"
 
-import "./App.css"
-import { useState, useEffect } from "react"
-import Dashboard from "./Dashboard.js"
-import Signup from "./Signup.js"
-import LoginPage from "./Login.js"
-import QuizPage from "./QuizPage.js"
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom"
-import LiveTranscriber from "./LiveTranscriber.js"
+"use client"
+import "./App.css";
+import React, { useState, useEffect } from "react";
+import Dashboard from "./Dashboard.js";
+import Signup from "./Signup.js";
+import LoginPage from "./Login.js";
+import QuizPage from "./QuizPage.js";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import LiveTranscriber from "./LiveTranscriber.js";
+
 
 function App() {
   console.log(localStorage.getItem("token")) // Debugging line to check token in localStorage
@@ -89,7 +90,14 @@ function App() {
       setIsLoading(false)
       localStorage.setItem("token", data._id) // use Mongo _id as token
 
-      navigate("/dashboard")
+
+      const data = await response.json();
+      setIsLoggedIn(true);
+      setCurrentUser(data);
+      setIsLoading(false);
+      localStorage.setItem("token", data._id); // use Mongo _id as token
+
+      navigate("/dashboard");
     } catch (error) {
       console.error("Login error:", error)
       alert("Login failed: " + error.message)
