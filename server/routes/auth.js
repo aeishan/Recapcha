@@ -20,8 +20,8 @@ router.post('/login', async (req, res) => {
         }
 
         // Return user data (excluding password)
-        const { password: _, ...userData } = user.toObject();
-        res.json(userData);
+        // const { password: _, ...userData } = user.toObject();
+        res.json(user);
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ message: 'Internal server error' });

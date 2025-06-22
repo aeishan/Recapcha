@@ -20,60 +20,61 @@ function Signup({ onBackToLogin, onSignupSuccess }) {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setEmailError("")
-    setPasswordError("")
-
-    // Validate email
+    e.preventDefault();
+    setEmailError("");
+    setPasswordError("");
+  
+    // ✅ Validate email format
     if (!isValidEmail(email)) {
-      setEmailError('Please enter a valid email address')
-      return
+      setEmailError('Please enter a valid email address');
+      return;
     }
-
-    // Check if email already exists
-    const existingUsers = JSON.parse(localStorage.getItem('users') || '[]')
-    if (existingUsers.find(user => user.email === email)) {
-      setEmailError('An account with this email already exists')
-      return
-    }
-
-    // Validate password match
+  
+    // ✅ Validate password match
     if (password !== confirmPassword) {
-      setPasswordError('Passwords do not match')
-      return
+      setPasswordError('Passwords do not match');
+      return;
     }
-
-    // Validate password length
+  
+    // ✅ Validate password length
     if (password.length < 6) {
-      setPasswordError('Password must be at least 6 characters long')
-      return
+      setPasswordError('Password must be at least 6 characters long');
+      return;
     }
-
-    setIsLoading(true)
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-
-    // Store user data in localStorage
-    const newUser = {
-      firstName,
-      lastName,
-      email,
-      password,
-      createdAt: new Date().toISOString()
+  
+    setIsLoading(true);
+  
+    try {
+      const response = await fetch('http://localhost:5050/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          password,
+        }),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Registration failed');
+      }
+  
+      const data = await response.json();
+      console.log("Signup successful:", data);
+  
+      setIsLoading(false);
+      alert("Account created successfully! Please sign in.");
+      onBackToLogin(); // 👈 Navigate back to login screen
+    } catch (error) {
+      console.error("Signup error:", error);
+      setEmailError(error.message); // You could adjust this based on error type
+      setIsLoading(false);
     }
-
-    const users = JSON.parse(localStorage.getItem('users') || '[]')
-    users.push(newUser)
-    localStorage.setItem('users', JSON.stringify(users))
-
-    console.log("Signup successful:", { firstName, lastName, email })
-    
-    // After successful signup
-    setIsLoading(false)
-    alert("Account created successfully! Please sign in.")
-    onBackToLogin() // Go back to login page
-  }
+  };
 
   return (
     <div className="login-container">
