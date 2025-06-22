@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react"
 
-const DG_KEY = process.env.REACT_APP_DEEPGRAM_API_KEY || "e54cf5e6857717121afcb119452f8bbb0a12fccb"
+const DG_KEY = process.env.REACT_APP_DEEPGRAM_API_KEY
 
 export default function LiveTranscriber({ onBack }) {
   const [isRecording, setIsRecording] = useState(false)

@@ -1,39 +1,45 @@
-
 import React, { useState, useEffect, useRef } from "react";
-import './App.css'
-import CourseModel from './CourseModel.js';
-import QuizModel from './QuizModel.js';
+import "./App.css";
+import CourseModel from "./CourseModel.js";
+import QuizModel from "./QuizModel.js";
 import { useNavigate } from "react-router-dom";
 import { gapi } from "gapi-script";
 import GoogleDocButton from "./GoogleDocButton.js";
-  
-  
+
 const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
-const SCOPES = "https://www.googleapis.com/auth/documents https://www.googleapis.com/auth/drive.file";
+const SCOPES =
+  "https://www.googleapis.com/auth/documents https://www.googleapis.com/auth/drive.file";
 
 function Dashboard({ user, onLogout, onShowQuiz, onShowTranscriber }) {
-  const [isRecording, setIsRecording] = useState(false)
-  const [showCourseModel, setShowCourseModel] = useState(false)
-  const [showQuizModel, setShowQuizModel] = useState(false)
-  const [selectedCourse, setSelectedCourse] = useState("")
-  const [recordingTimer, setRecordingTimer] = useState(0)
-  
+  const [isRecording, setIsRecording] = useState(false);
+  const [showCourseModel, setShowCourseModel] = useState(false);
+  const [showQuizModel, setShowQuizModel] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState("");
+  const [recordingTimer, setRecordingTimer] = useState(0);
+
   const tokenClient = useRef(null);
   const accessToken = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     function start() {
       gapi.client.init({
         apiKey: API_KEY,
-        discoveryDocs: ["https://docs.googleapis.com/$discovery/rest?version=v1"],
+        discoveryDocs: [
+          "https://docs.googleapis.com/$discovery/rest?version=v1",
+        ],
       });
     }
     gapi.load("client", start);
 
     // Wait for GIS script to load
     const interval = setInterval(() => {
-      if (window.google && window.google.accounts && window.google.accounts.oauth2) {
+      if (
+        window.google &&
+        window.google.accounts &&
+        window.google.accounts.oauth2
+      ) {
         tokenClient.current = window.google.accounts.oauth2.initTokenClient({
           client_id: CLIENT_ID,
           scope: SCOPES,
@@ -50,81 +56,82 @@ function Dashboard({ user, onLogout, onShowQuiz, onShowTranscriber }) {
     return () => clearInterval(interval);
   }, []);
 
-
-  const navigate = useNavigate()
-
   if (!user) return null;
 
-// Now safe to access user fields
-const fullName = `${user.firstName} ${user.lastName}`;
-const firstName = user.firstName;
+  // Now safe to access user fields
+  const fullName = `${user.firstName} ${user.lastName}`;
+  const firstName = user.firstName;
 
   const handleStartRecording = () => {
     if (!isRecording) {
-      setShowCourseModel(true)
+      setShowCourseModel(true);
     } else {
       // Stop recording
-      setIsRecording(false)
-      setRecordingTimer(0)
-      setShowQuizModel(true)
+      setIsRecording(false);
+      setRecordingTimer(0);
+      setShowQuizModel(true);
     }
-  }
+  };
 
   const handleCourseSelect = (courseId) => {
-    setSelectedCourse(courseId)
-    setIsRecording(true)
-    setShowCourseModel(false)
-    
+    setSelectedCourse(courseId);
+    setIsRecording(true);
+    setShowCourseModel(false);
+
     // Start timer simulation
     const timer = setInterval(() => {
-      setRecordingTimer(prev => prev + 1)
-    }, 1000)
-    
+      setRecordingTimer((prev) => prev + 1);
+    }, 1000);
+
     // Auto stop after 10 seconds for demo (remove this in real app)
     setTimeout(() => {
-      clearInterval(timer)
+      clearInterval(timer);
       if (isRecording) {
-        setIsRecording(false)
-        setRecordingTimer(0)
-        setShowQuizModel(true)
+        setIsRecording(false);
+        setRecordingTimer(0);
+        setShowQuizModel(true);
       }
-    }, 10000)
-  }
+    }, 10000);
+  };
 
   const handleTakeQuiz = () => {
-    setShowQuizModel(false)
-    onShowQuiz(selectedCourse)
-  }
+    setShowQuizModel(false);
+    onShowQuiz(selectedCourse);
+  };
 
   const handleBackToDashboard = () => {
-    setShowQuizModel(false)
-    setSelectedCourse("")
-  }
+    setShowQuizModel(false);
+    setSelectedCourse("");
+  };
 
   const handleLogout = () => {
-    console.log("Logging out...")
-    onLogout() // Call the logout function passed from App.js
+    console.log("Logging out...");
+    onLogout(); // Call the logout function passed from App.js
     setTimeout(() => navigate("/"), 0); // Allow state update to complete
-  }
+  };
 
   const getCourseName = (courseId) => {
     const courseNames = {
-      'calculus': 'Calculus',
-      'linear-algebra': 'Linear Algebra',
-      'biology': 'Biology',
-      'physics': 'Physics',
-      'chemistry': 'Chemistry',
-      'history': 'History',
-      'music': 'Music'
-    }
-    return courseNames[courseId] || courseId
+      calculus: "Calculus",
+      "linear-algebra": "Linear Algebra",
+      biology: "Biology",
+      physics: "Physics",
+      chemistry: "Chemistry",
+      history: "History",
+      music: "Music",
+    };
+    return courseNames[courseId] || courseId;
+  };
+
+  const realRecording = () => {
+    navigate("/transcriber");
   }
 
   const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins}:${secs.toString().padStart(2, '0')}`
-  }
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
 
   const stats = [
     { title: "Total Sessions", value: "24", icon: "⏰", trend: "+12%" },
@@ -177,8 +184,6 @@ const firstName = user.firstName;
           </div>
 
           <div className="header-actions">
-
-
             {/* User Menu */}
             <div className="user-section">
               <div className="user-info">
@@ -200,7 +205,10 @@ const firstName = user.firstName;
         {/* Welcome Section */}
         <div className="welcome-section">
           <h2 className="welcome-title">Welcome back, {firstName}! 👋</h2>
-          <p className="welcome-subtitle">Ready to continue your learning journey? Here's what's happening today.</p>
+          <p className="welcome-subtitle">
+            Ready to continue your learning journey? Here's what's happening
+            today.
+          </p>
         </div>
 
         {/* Stats Cards */}
@@ -240,6 +248,9 @@ const firstName = user.firstName;
             ))}
             {/* Google Doc Button as a separate component */}
             <GoogleDocButton />
+            <button className="action-card" onClick={realRecording}>
+              Start Live Transcription
+            </button>{" "}
           </div>
         </div>
 
@@ -248,14 +259,28 @@ const firstName = user.firstName;
           <div className="activity-card">
             <div className="card-header">
               <h3 className="card-title">Recent Sessions</h3>
-              <p className="card-description">Your latest transcription sessions</p>
+              <p className="card-description">
+                Your latest transcription sessions
+              </p>
             </div>
             <div className="card-content">
               <div className="sessions-list">
                 {[
-                  { title: "Biology Lecture - Chapter 5", time: "2 hours ago", duration: "45 min" },
-                  { title: "History Notes Review", time: "1 day ago", duration: "32 min" },
-                  { title: "Math Problem Solving", time: "2 days ago", duration: "28 min" },
+                  {
+                    title: "Biology Lecture - Chapter 5",
+                    time: "2 hours ago",
+                    duration: "45 min",
+                  },
+                  {
+                    title: "History Notes Review",
+                    time: "1 day ago",
+                    duration: "32 min",
+                  },
+                  {
+                    title: "Math Problem Solving",
+                    time: "2 days ago",
+                    duration: "28 min",
+                  },
                 ].map((session, index) => (
                   <div key={index} className="session-item">
                     <div className="session-info">
@@ -272,7 +297,9 @@ const firstName = user.firstName;
           <div className="activity-card">
             <div className="card-header">
               <h3 className="card-title">Study Progress</h3>
-              <p className="card-description">Your learning achievements this week</p>
+              <p className="card-description">
+                Your learning achievements this week
+              </p>
             </div>
             <div className="card-content">
               <div className="progress-list">
@@ -282,7 +309,10 @@ const firstName = user.firstName;
                     <span className="progress-value">24/30</span>
                   </div>
                   <div className="progress-bar">
-                    <div className="progress-fill blue" style={{ width: "80%" }}></div>
+                    <div
+                      className="progress-fill blue"
+                      style={{ width: "80%" }}
+                    ></div>
                   </div>
                 </div>
 
@@ -292,7 +322,10 @@ const firstName = user.firstName;
                     <span className="progress-value">87%</span>
                   </div>
                   <div className="progress-bar">
-                    <div className="progress-fill green" style={{ width: "87%" }}></div>
+                    <div
+                      className="progress-fill green"
+                      style={{ width: "87%" }}
+                    ></div>
                   </div>
                 </div>
 
@@ -302,7 +335,10 @@ const firstName = user.firstName;
                     <span className="progress-value">7 days 🔥</span>
                   </div>
                   <div className="progress-bar">
-                    <div className="progress-fill orange" style={{ width: "70%" }}></div>
+                    <div
+                      className="progress-fill orange"
+                      style={{ width: "70%" }}
+                    ></div>
                   </div>
                 </div>
               </div>
