@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import './App.css'
 import Dashboard from './Dashboard'
 import Signup from './Signup'
+import LiveTranscriber from './LiveTranscriber'
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -13,7 +14,8 @@ function App() {
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [emailError, setEmailError] = useState("")
-
+  const [showTranscriber, setShowTranscriber] = useState(false)
+ 
   // Email validation function
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -73,17 +75,28 @@ function App() {
     setEmailError("") // Clear any signup errors
   }
 
-  // If logged in, show dashboard
-  if (isLoggedIn && currentUser) {
-    return <Dashboard user={currentUser} onLogout={handleLogout} />
+  // 1. If showing transcriber, show it first
+  if (showTranscriber) {
+    return <LiveTranscriber onBack={() => setShowTranscriber(false)} />
   }
 
-  // If showing signup, show signup page
+  // 2. If logged in, show dashboard
+  if (isLoggedIn && currentUser) {
+    return (
+      <Dashboard
+        user={currentUser}
+        onShowTranscriber={() => setShowTranscriber(true)}
+        onLogout={handleLogout}
+      />
+    )
+  }
+
+  // 3. If showing signup, show signup page
   if (showSignup) {
     return <Signup onBackToLogin={handleBackToLogin} />
   }
 
-  // Otherwise, show login form
+  // 4. Otherwise, show login form
   return (
     <div className="login-container">
       <div className="login-wrapper">
