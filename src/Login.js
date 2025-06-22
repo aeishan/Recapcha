@@ -39,10 +39,15 @@ const LoginPage = ({
         {/* Logo/Brand Section */}
         <div className="brand-section">
           <div className="logo-container">
-            <div className="logo-icon">🏢</div>
+            {/* Green Pineapple SVG */}
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <ellipse cx="24" cy="32" rx="12" ry="14" fill="#27ae60" />
+              <path d="M24 10 L28 20 L20 20 Z" fill="#229954" />
+              <path d="M24 6 L26 14 L22 14 Z" fill="#229954" />
+              <path d="M24 2 L25 8 L23 8 Z" fill="#229954" />
+            </svg>
           </div>
-          <h1 className="brand-title">Welcome Back</h1>
-          <p className="brand-subtitle">Sign in to your account to continue</p>
+          <h1 className="brand-title">Recapcha</h1>
         </div>
 
         <div className="login-card">
@@ -60,7 +65,10 @@ const LoginPage = ({
                   Email Address
                 </label>
                 <div className="input-container">
-                  <span className="input-icon">📧</span>
+                  {/* Email Icon (Envelope SVG) */}
+                  <span className="input-icon" style={{ display: "flex", alignItems: "center" }}>
+                    <svg width="18" height="18" fill="none" stroke="#888" strokeWidth="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2" /><polyline points="2,7 12,13 22,7" /></svg>
+                  </span>
                   <input
                     id="email"
                     type="email"
@@ -85,7 +93,10 @@ const LoginPage = ({
                   Password
                 </label>
                 <div className="input-container">
-                  <span className="input-icon">🔒</span>
+                  {/* Lock Icon */}
+                  <span className="input-icon" style={{ display: "flex", alignItems: "center" }}>
+                    <svg width="18" height="18" fill="none" stroke="#888" strokeWidth="2" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="7" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  </span>
                   <input
                     id="password"
                     type={showPassword ? "text" : "password"}
@@ -99,35 +110,20 @@ const LoginPage = ({
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="password-toggle"
+                    aria-label="Toggle password visibility"
+                    style={{ background: "none", border: "none", marginLeft: 6, cursor: "pointer" }}
                   >
-                    {showPassword ? "🙈" : "👁️"}
+                    {/* Eye/Eye-off SVG */}
+                    {showPassword ? (
+                      <svg width="18" height="18" fill="none" stroke="#888" strokeWidth="2" viewBox="0 0 24 24"><path d="M1 1l22 22"/><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-5 0-9.27-3.11-11-7.5a11.05 11.05 0 0 1 5.17-5.92"/><path d="M9.53 9.53A3 3 0 0 0 12 15a3 3 0 0 0 2.47-5.47"/></svg>
+                    ) : (
+                      <svg width="18" height="18" fill="none" stroke="#888" strokeWidth="2" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="10" ry="7"/><circle cx="12" cy="12" r="3"/></svg>
+                    )}
                   </button>
                 </div>
               </div>
 
-              <div className="form-options">
-                <div className="checkbox-container">
-                  <input
-                    id="remember"
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className="form-checkbox"
-                  />
-                  <label htmlFor="remember" className="checkbox-label">
-                    Remember me
-                  </label>
-                </div>
-                <button
-                  type="button"
-                  className="forgot-password"
-                  onClick={() =>
-                    alert("Password reset functionality would be implemented here")
-                  }
-                >
-                  Forgot password?
-                </button>
-              </div>
+              {/* Removed remember me and forgot password */}
 
               <button
                 type="submit"
@@ -168,15 +164,9 @@ const LoginPage = ({
           </div>
         </div>
 
-        <div className="footer">
-          <p className="footer-copyright">
-            © 2024 Your Company. All rights reserved.
-          </p>
-          <div className="footer-links">
-            <button className="footer-link">Privacy Policy</button>
-            <button className="footer-link">Terms of Service</button>
-            <button className="footer-link">Support</button>
-          </div>
+        {/* Minimal Footer */}
+        <div className="footer" style={{ textAlign: "center", marginTop: 32, color: "#229954", fontWeight: 600 }}>
+          Green Pineapple SpurHacks 2025
         </div>
       </div>
     </div>
