@@ -140,15 +140,7 @@ const LoginPage = ({
                 )}
               </button>
             </form>
-            {/* Dev Login Button: only on login page, bypasses to dashboard */}
-            <button
-              type="button"
-              style={{ marginTop: '10px', background: '#eee', color: '#333', border: '1px solid #ccc' }}
-              onClick={handleDevLogin}
-            >
-              Dev Login (Bypass to Dashboard)
-            </button>
-
+            {/* Removed Dev Login Button */}
             <div className="signup-section">
               <p className="signup-text">
                 Don't have an account?{" "}
