@@ -918,6 +918,121 @@ body {
   box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
 }
 
+/* Login Styles */
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f7f9fa;
+}
+
+.login-wrapper {
+  width: 340px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+  padding: 32px;
+}
+
+.brand-section {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.brand-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-top: 12px;
+  margin-bottom: 0;
+}
+
+.login-card {
+  margin-top: 0;
+}
+
+.card-header {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.card-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.card-description {
+  color: #888;
+  font-size: 1rem;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.input-container {
+  display: flex;
+  align-items: center;
+  background: #f8fafc;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+  padding: 0 8px;
+}
+
+.input-icon {
+  margin-right: 6px;
+}
+
+.form-input {
+  border: none;
+  background: transparent;
+  padding: 10px 0;
+  font-size: 16px;
+  width: 100%;
+  outline: none;
+}
+
+.password-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.submit-button {
+  width: 100%;
+  background: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 0;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.signup-section {
+  text-align: center;
+  margin-top: 18px;
+}
+
+.signup-link {
+  background: none;
+  border: none;
+  color: #3498db;
+  font-weight: 500;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 32px;
+  color: #229954;
+  font-weight: 600;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .header-content {
@@ -970,6 +1085,27 @@ body {
   .download-btn {
     width: 100%;
     justify-content: center;
+  }
+
+  .login-wrapper {
+    width: 100%;
+    padding: 24px;
+  }
+
+  .brand-title {
+    font-size: 1.5rem;
+  }
+
+  .card-title {
+    font-size: 1.2rem;
+  }
+
+  .form-input {
+    font-size: 14px;
+  }
+
+  .submit-button {
+    font-size: 14px;
   }
 }
 

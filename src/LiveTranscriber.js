@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react"
 import GoogleDocButton from "./GoogleDocButton.js"
+import QuizComponent from "./QuizComponent.js"
 
 const OPENAI_KEY = process.env.REACT_APP_OPENAI_API
 const DG_KEY = process.env.REACT_APP_DEEPGRAM_API_KEY
@@ -17,6 +18,7 @@ export default function LiveTranscriber({ onBack }) {
   const [quizFile, setQuizFile] = useState("")
   const [docJson, setDocJson] = useState([])
   const [view, setView] = useState("transcript")
+  const [showQuizComponent, setShowQuizComponent] = useState(false);
   const wordBufferRef = useRef([])
   const mediaRecorderRef = useRef(null)
   const socketRef = useRef(null)
@@ -367,14 +369,17 @@ Notes JSON:
               )}
 
               {quizFile && (
-                <button className="download-btn quiz" onClick={handleDownloadJson}>
+                <button
+                  className="download-btn quiz"
+                  onClick={() => setShowQuizComponent(true)}
+                >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                     <polyline points="14,2 14,8 20,8" />
                     <circle cx="12" cy="13" r="2" />
                     <path d="M12 10v6" />
                   </svg>
-                  Download Quiz (.json)
+                  Take Quiz
                 </button>
               )}
 
@@ -397,6 +402,30 @@ Notes JSON:
                 />
               )}
             </div>
+          </div>
+        )}
+
+        {/* Render QuizComponent if requested */}
+        {showQuizComponent && (
+          <div style={{ marginTop: 32 }}>
+            <QuizComponent
+              quizData={quizData}
+              onSubmit={() => setShowQuizComponent(false)}
+            />
+            <button
+              style={{
+                margin: "16px auto 0",
+                display: "block",
+                background: "#eee",
+                border: "1px solid #ccc",
+                borderRadius: 6,
+                padding: "8px 24px",
+                cursor: "pointer"
+              }}
+              onClick={() => setShowQuizComponent(false)}
+            >
+              Close Quiz
+            </button>
           </div>
         )}
       </div>
