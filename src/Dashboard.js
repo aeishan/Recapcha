@@ -1,7 +1,14 @@
-import React, { useState } from "react"
+import React, { useState, useEffect, useRef } from "react";
 import './App.css'
 import CourseModel from './CourseModel.js';
 import QuizModel from './QuizModel.js';
+import { gapi } from "gapi-script";
+import GoogleDocButton from "./GoogleDocButton";
+  
+  
+const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
+const SCOPES = "https://www.googleapis.com/auth/documents https://www.googleapis.com/auth/drive.file";
 
 function Dashboard({ user, onLogout, onShowQuiz }) {
   const [isRecording, setIsRecording] = useState(false)
@@ -9,6 +16,38 @@ function Dashboard({ user, onLogout, onShowQuiz }) {
   const [showQuizModel, setShowQuizModel] = useState(false)
   const [selectedCourse, setSelectedCourse] = useState("")
   const [recordingTimer, setRecordingTimer] = useState(0)
+  
+  const tokenClient = useRef(null);
+  const accessToken = useRef(null);
+
+  useEffect(() => {
+    function start() {
+      gapi.client.init({
+        apiKey: API_KEY,
+        discoveryDocs: ["https://docs.googleapis.com/$discovery/rest?version=v1"],
+      });
+    }
+    gapi.load("client", start);
+
+    // Wait for GIS script to load
+    const interval = setInterval(() => {
+      if (window.google && window.google.accounts && window.google.accounts.oauth2) {
+        tokenClient.current = window.google.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
+          scope: SCOPES,
+          callback: (tokenResponse) => {
+            accessToken.current = tokenResponse.access_token;
+            gapi.client.setToken({ access_token: accessToken.current });
+          },
+        });
+        clearInterval(interval);
+      }
+    }, 100);
+
+    // Cleanup interval on unmount
+    return () => clearInterval(interval);
+  }, []);
+
 
   const handleStartRecording = () => {
     if (!isRecording) {
@@ -53,9 +92,9 @@ function Dashboard({ user, onLogout, onShowQuiz }) {
   }
 
   const handleLogout = () => {
-    console.log("Logging out...")
-    onLogout() // Call the logout function passed from App.js
-  }
+    console.log("Logging out...");
+    onLogout();
+  };
 
   const getCourseName = (courseId) => {
     const courseNames = {
@@ -81,7 +120,7 @@ function Dashboard({ user, onLogout, onShowQuiz }) {
     { title: "Flashcards Created", value: "156", icon: "📄", trend: "+8%" },
     { title: "Quizzes Completed", value: "18", icon: "🧠", trend: "+15%" },
     { title: "Study Time", value: "42h", icon: "📈", trend: "+23%" },
-  ]
+  ];
 
   const quickActions = [
     {
@@ -112,7 +151,7 @@ function Dashboard({ user, onLogout, onShowQuiz }) {
       color: "orange",
       action: () => console.log("Navigate to Analytics"),
     },
-  ]
+  ];
 
   // Get full name from user data
   const fullName = `${user.firstName} ${user.lastName}`
@@ -208,6 +247,8 @@ function Dashboard({ user, onLogout, onShowQuiz }) {
                 </div>
               </div>
             ))}
+            {/* Google Doc Button as a separate component */}
+            <GoogleDocButton />
           </div>
         </div>
 
@@ -293,7 +334,7 @@ function Dashboard({ user, onLogout, onShowQuiz }) {
         courseName={getCourseName(selectedCourse)}
       />
     </div>
-  )
+  );
 }
 
-export default Dashboard
+export default Dashboard;
