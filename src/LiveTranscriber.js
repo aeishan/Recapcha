@@ -1,8 +1,8 @@
 import React, { useState, useRef } from "react"
 import GoogleDocButton from "./GoogleDocButton.js"
-
-const DG_KEY = process.env.REACT_APP_DEEPGRAM_API_KEY;
 const OPENAI_KEY = process.env.REACT_APP_OPENAI_API;
+const DG_KEY = process.env.REACT_APP_DEEPGRAM_API_KEY
+
 
 export default function LiveTranscriber({ onBack }) {
   const [isRecording, setIsRecording] = useState(false)
