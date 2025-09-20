@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
 
 // Notes schema: just stores a txt file as a string
 const noteSchema = new mongoose.Schema({

@@ -1,11 +1,10 @@
-
 "use client"
 import "./App.css";
 import React, { useState, useEffect } from "react";
 import Dashboard from "./Dashboard.js";
 import Signup from "./Signup.js";
 import LoginPage from "./Login.js";
-import QuizPage from "./QuizPage.js";
+import Quiz from "./Quiz.js";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import LiveTranscriber from "./LiveTranscriber.js";
 
@@ -180,8 +179,23 @@ function App() {
               />
             }
           />
-          <Route path="/quiz" element={<QuizPage onBackToDashboard={handleBackToDashboard} />} />
-          <Route path="/transcriber" element={<LiveTranscriber onBack={() => navigate("/dashboard")} />} />
+          <Route
+            path="/quiz"
+            element={<Quiz user={currentUser} onLogout={handleLogout} />}
+          />
+          <Route
+            path="/quiz/:quizId"
+            element={<Quiz user={currentUser} onLogout={handleLogout} />}
+          />
+          <Route
+            path="/transcriber"
+            element={
+              <LiveTranscriber 
+                user={currentUser}  // Add this line - user was missing!
+                onBack={() => navigate("/dashboard")} 
+              />
+            }
+          />
         </>
       )}
       <Route path="*" element={<Navigate to={isLoggedIn ? "/dashboard" : "/"} />} />

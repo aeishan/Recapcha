@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react"
 import "./App.css"
 import CourseModel from "./CourseModel.js"
-import QuizModel from "./QuizModel.js"
 import { useNavigate } from "react-router-dom"
 import { gapi } from "gapi-script"
 
@@ -128,6 +127,13 @@ function Dashboard({ user, onLogout, onShowQuiz, onShowTranscriber }) {
       icon: "🎤",
       color: "emerald",
       action: onShowTranscriber,
+    },
+    {
+      title: "Take a Quiz",
+      description: "Test your knowledge with interactive quizzes",
+      icon: "📝",
+      color: "blue",
+      action: () => navigate("/quiz"),
     },
   ]
 
@@ -294,12 +300,8 @@ function Dashboard({ user, onLogout, onShowQuiz, onShowTranscriber }) {
           onSelectCourse={handleCourseSelect}
         />
 
-        <QuizModel
-          isOpen={showQuizModel}
-          onClose={handleBackToDashboard}
-          onTakeQuiz={handleTakeQuiz}
-          courseName={getCourseName(selectedCourse)}
-        />
+        
+
       </div>
     </div>
   )

@@ -3,6 +3,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import authRoute from './routes/auth.js';
+import quizRoutes from './routes/quizRoutes.js';
 
 const app = express();
 app.use(express.json());
@@ -20,6 +21,8 @@ mongoose.connection.once('open', () => {
 
 // ✅ Mount auth routes
 app.use('/api/auth', authRoute);
+
+app.use('/api/quiz', quizRoutes);
 
 // ✅ Start server
 app.listen(5050, () => console.log('Server running on port 5050'));
