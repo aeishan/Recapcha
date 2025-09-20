@@ -1,40 +1,19 @@
-# 🧠 Recapcha
+# Recapcha
 
 **Recapcha** is a full-stack web app that helps students convert their notes into quizzes for more effective studying. Write or upload your notes, and Recapcha will intelligently create quiz questions to test your memory and reinforce learning.
 
----
 
-## 🚀 Features
+## Features
 
-- 📝 Save and manage plain text notes
-- 🧠 Automatically generate quizzes based on notes
-- 🔐 User authentication (Register / Login)
-- 📎 Associate quizzes with their original notes
-- ⏬ Download `.txt` notes or `.json` quizzes
-- 🧑‍💻 Built with MERN Stack (MongoDB, Express, React Native, Node.js)
+-  Save and manage plain text notes
+-  Automatically generate quizzes based on notes
+-  User authentication (Register / Login)
+-  Associate quizzes with their original notes
+-  Download `.txt` notes 
+-  Built with MERN Stack (MongoDB, Express, React, Node.js)
 
----
 
-## 📁 Folder Structure
-
-```bash
-Recapcha/
-├── client/             # React Native frontend
-│   ├── screens/        # App screens (Home, Login, Register, etc.)
-│   ├── components/     # Shared UI components
-│   ├── types/          # TypeScript types
-│   └── ...             # Additional client logic
-├── server/             # Node.js + Express backend
-│   ├── models/         # Mongoose models (User, Note, Quiz)
-│   ├── routes/         # API endpoints
-│   └── app.js          # Server entry point
-├── .env                # Environment variables
-└── README.md           # Project documentation
-```
-
----
-
-## 🧑‍💻 Tech Stack
+## Tech Stack
 
 | Layer        | Technology          |
 |--------------|---------------------|
@@ -44,17 +23,16 @@ Recapcha/
 | Auth         | Custom Bearer Token |
 | Language     | TypeScript & JavaScript |
 
----
 
-## ⚙️ Setup Instructions
+## Setup Instructions
 
-### 📦 Prerequisites
+### Prerequisites
 
 - Node.js (v18+ recommended)
 - MongoDB (local or Atlas)
 - Expo CLI: `npm install -g expo-cli`
 
-### 🛠️ Backend Setup
+### Backend Setup
 
 ```bash
 cd server
@@ -65,84 +43,27 @@ npm run dev
 Create a `.env` file inside the `/server` folder:
 
 ```env
-MONGO_URI=mongodb://localhost:27017/recapcha
+# API Keys
+REACT_APP_OPENAI_API="your_openai_api_key_here"
+REACT_APP_DEEPGRAM_API_KEY="your_deepgram_api_key_here"
+REACT_APP_GOOGLE_API_KEY="your_google_api_key_here"
+REACT_APP_GOOGLE_CLIENT_ID="your_google_client_id_here"
+
+# Database
+MONGODB_URI="your_mongodb_connection_string"
+
+# Server
 PORT=5050
 ```
 
-### 📱 Frontend Setup
-
-```bash
-cd client
-npm install
-npx expo start
-```
 
 ---
 
-## 🔐 Authentication Flow
 
-- Upon login, the user receives a simple token (user ID)
-- This token is stored in `localStorage` on the device
-- It is sent in the `Authorization: Bearer <token>` header for all secured requests
 
 ---
 
-## 📡 API Endpoints
-
-### Auth
-
-```http
-POST   /api/auth/register     # Register new user
-POST   /api/auth/login        # Login and get token
-GET    /api/auth/user/me      # Get current logged-in user (via token)
-```
-
-### Notes
-
-```http
-POST   /api/notes             # Create new note (requires token)
-```
-
-### Quizzes
-
-```http
-POST   /api/quizzes           # Create new quiz associated with a note (requires token)
-```
-
----
-
-## 📦 Data Structure
-
-### 📄 Note
-
-```ts
-{
-  uuid: string;
-  txt: string;
-  createdAt: Date;
-}
-```
-
-### ❓ Quiz
-
-```ts
-{
-  q: string;
-  a: {
-    a1: boolean;
-    a2: boolean;
-    a3: boolean;
-    a4: boolean;
-  };
-  note: string;       // references note UUID
-  user: string;       // user UUID
-  createdAt: Date;
-}
-```
-
----
-
-## 🧪 How It Works
+## How It Works
 
 1. **User creates a note** → Stored in backend and linked to user
 2. **User generates a quiz** → Tied to the specific note
@@ -151,7 +72,7 @@ POST   /api/quizzes           # Create new quiz associated with a note (requires
 
 ---
 
-## 📌 Notes
+## Notes
 
 - Notes and quizzes are embedded arrays in the User schema
 - Quizzes reference notes via UUID (fastest for embedded schema)
@@ -159,9 +80,12 @@ POST   /api/quizzes           # Create new quiz associated with a note (requires
 
 ---
 
-## 🙌 Author
+## Team
 
-Made with ❤️ by [@aeishan](https://github.com/aeishan)
+[@aeishan](https://github.com/aeishan)
+[@1sakib](https://github.com/1sakib)
+[@obeyad12](https://github.com/obeyad12)
+[@MuhammadTaha457](https://github.com/MuhammadTaha457)
 
 ---
 
